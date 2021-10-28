@@ -90,78 +90,25 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
 {
     uint1024_t number;
     char sum[310];
-    int i;
-    if (x.size > y.size)
+    int i, more;
+    for (i = 309; i > -1; i++)
     {
-        for (i=309; i>-1; i--)
+        int x2 = atoi(&x.number[i]);
+        int y2 = atoi(&y.number[i]);
+        if (x2 < y2 + more)
         {
-            int x2 = atoi(&x.number[i]);
-            int y2 =  atoi(&y.number[i]);
-            if (x2 - y2 < 0)
-            {
-                printf("Unexpexted behaviour");
-                exit (-1);
-            }
-            itoa(x2 - y2, &sum[i]);
-        }
-    }
-    else if (y.size > x.size)
-    {
-        for (i=309; i>-1; i--)
-        {
-            int x2 = atoi(&y.number[i]);
-            int y2 =  atoi(&x.number[i]);
-            if (x2 - y2 < 0)
-            {
-                printf("Unexpexted behaviour");
-                exit (-1);
-            }
-            itoa(x2 - y2, &sum[i]);
-        }
-    }
-    else
-    {
-        int flag = 0;
-        for (i = 0; i < 310; i++)
-        {
-            if (x.number[i] > y.number[i])
-            {
-                flag = 1;
-                break;
-            }
-            else if (y.number[i] > x.number[i])
-            {
-                flag = 2;
-                break;
-            }
-        }
-        if (flag == 1)
-        {
-            for (i=309; i>-1; i--)
-            {
-                int x2 = atoi(&x.number[i]);
-                int y2 =  atoi(&y.number[i]);
-                if (x2 - y2 < 0)
-                {
-                    printf("Unexpexted behaviour");
-                    exit (-1);
-                }
-                itoa(x2 - y2, &sum[i]);
-            }
+            itoa(10 + x2 - y2 - more, &sum[i]);
+            more = 1;
         }
         else
         {
-            for (i=309; i>-1; i--)
-            {
-                int x2 = atoi(&y.number[i]);
-                int y2 =  atoi(&x.number[i]);
-                if (x2 - y2 < 0)
-                {
-                    printf("Unexpexted behaviour");
-                    exit (-1);
-                }
-                itoa(x2 - y2, &sum[i]);
-            }
+            itoa(x2 - y2 - more, &sum[i]);
+            more = 0;
+        }
+        if (atoi(&sum[i]) < 0)
+        {
+            printf("Unexpected behaviour");
+            exit(-1);
         }
     }
     strcpy(number.number, sum);
@@ -221,7 +168,7 @@ int main(int argc, char *argv[])
     printf("\n");
 
     printf("Subtr\n");
-    //printf_value(subtr_op(number1, number2));
+    printf_value(subtr_op(number1, number2));
     printf("\n");
 
     printf("Mult\n");
