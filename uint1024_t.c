@@ -1,21 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*
-1. uint1024_t from_uint(unsigned int x) - генерация из числа
-2. uint1024_t add_op(uint1024_t x, uint1024_t y) - сложение
-3. uint1024_t subtr_op(uint1024_t x, uint1024_t y) - вычетание
-4. uint1024_t mult_op(uint1024_t x, uint1024_t y) - умножение
-5. void printf_value(uint1024_t x) - вывод в стандартный поток
-вывода
-6. void scanf_value(uint1024_t* x) - чтение из стандартного потока
-ввода
-*/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdint.h>
 
 /*
