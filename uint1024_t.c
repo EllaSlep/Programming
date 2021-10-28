@@ -21,14 +21,6 @@ typedef struct uint1024_t
     int32_t size;
 } uint1024_t;
 
-uint1024_t init(int size) 
-{
-    uint1024_t rez;
-    rez.size = size;
-    rez.number = calloc(size, sizeof(uint32_t));
-    return rez;
-}
-
 uint1024_t from_uint(unsigned int x) {
     uint1024_t rez;
     if (x < 1000 * 1000 * 1000) 
@@ -61,7 +53,9 @@ uint1024_t add_op(uint1024_t x, uint1024_t y)
     {
         rezSize = y.size;
     }
-    uint1024_t rez = init(rezSize);
+    uint1024_t rez;
+    rez.size = rezSize;
+    rez.number = calloc(rez.size, sizeof(uint32_t));
 
     for (i = 0; i < rezSize or more; i++) 
     {
@@ -94,7 +88,9 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
     {
         rezSize = y.size;
     }
-    uint1024_t rez = init(rezSize);
+    uint1024_t rez;
+    rez.size = rezSize;
+    rez.number = calloc(rez.size, sizeof(uint32_t));
     for (i = 0; i < rezSize or more; ++i)
     {
         if (x.number[i] < (i < y.size ? y.number[i] : 0) + more)
@@ -120,7 +116,10 @@ uint1024_t mult_op(uint1024_t x, uint1024_t y)
 {
     int rezSize = x.size + y.size;
     int i, j, more;
-    uint1024_t rez = init(rezSize);
+    uint1024_t rez;
+    rez.size = rezSize;
+    rez.number = calloc(rez.size, sizeof(uint32_t));
+    
 
     for (i = 0; i < x.size; ++i)
         for (j = 0, more = 0; j < y.size or more; ++j) 
