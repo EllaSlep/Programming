@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 /*
 $remote_addr - - [$local_time] “$request” $status $bytes_send
@@ -35,30 +36,60 @@ int main (int argc, char * argv[])
         }
     }
     printf("\nNumber of 500 requests: %d\nNumber of all requests: %d\n", number_of_500requests, number_of_requests);
-    printf("%ld\tDONE\n\n", time(NULL) - start);
     fclose(in);
-    
-/*
+
+    time_t time1, time2;
     struct tm u1;
     struct tm u2;
-    int time_limit;
+    char local_time2[100];
+    char strtime1[80], strtime2[80];
+    int time_limit, rez;
+    int *a;
+    int i = 0, j, size, k, max = 0;
 
     in = fopen("access_log_Jul95", "r");
-    //scanf("%d\n", time_limit);
-    printf("%s\n", local_time);
-    strptime(local_time, "%d/%b/%Y:%H:%M:%S", &u1);
-    printf("day %d, monday %d, year %d, hour %d, minets %d, secods %d\n", u1.tm_mday, u1.tm_mon + 1, u1.tm_year + 1900, u1.tm_hour, u1.tm_min, u1.tm_sec);
-    strptime("28/Jul/1995:13:32:30", "%s/%b/%Y:%H:%M:%S", &u2);
-    printf("day %d, monday %d, year %d, hour %d, minets %d, secods %d\n", u1.tm_mday, u1.tm_mon + 1, u1.tm_year + 1900, u1.tm_hour, u1.tm_min, u1.tm_sec);
-    struct tm rez;
-    rez.tm_mday = u2.tm_mday - u1.tm_mday;
-    rez.tm_mon = u2.tm_mon - u1.tm_mon;
-    rez.tm_year = u2.tm_year - u1.tm_year;
-    rez.tm_hour = u2.tm_hour - u1.tm_hour;
-    rez.tm_min = u2.tm_min - u1.tm_min;
-    rez.tm_sec = u2.tm_sec - u1.tm_sec;
-    printf("day %d, monday %d, year %d, hour %d, minets %d, secods %d\n", rez.tm_mday, rez.tm_mon + 1, rez.tm_year + 1900, rez.tm_hour, rez.tm_min, rez.tm_sec);
-    */
+    fscanf(in, "%s - - [%s -0400] \"%s %s HTTP/1.0\" %d %s\n", remote_addr, local_time, command, request, &status, bytes_send);
+    a = (int*)malloc(8000000);
+    while (!feof(in))
+    {
+        strptime(local_time, "%d/%b/%Y:%H:%M:%S", &u1);
+        time1 = mktime(&u1);
+        fscanf(in, "%s - - [%s -0400] \"%s %s HTTP/1.0\" %d %s\n", remote_addr, local_time2, command, request, &status, bytes_send);
+        strptime(local_time2, "%d/%b/%Y:%H:%M:%S", &u2);
+        time2 = mktime(&u2);
+        strftime(strtime1, 80, "%d/%b/%Y %H:%M:%S", localtime(&time1));
+        strftime(strtime2, 80, "%d/%b/%Y %H:%M:%S", localtime(&time2));
+        a[i] = difftime(time2, time1);
+        i++;
+        strcpy(local_time, local_time2);
+    }
+    printf("\n time_limit = ");
+    scanf("%d", &time_limit);
+    size = i;
+    for (i = 0; i < size; i++)
+    {
+        k = 2; //потому что в  a[i] содержтся разница между двумя строчками
+        rez = a[i];
+        j = i + 1;
+        if ((rez == time_limit) && (k > max))
+        {
+            max = k;
+        }
+        while ((time_limit >= rez) && ( j != size))
+        {
+            rez += a[j];
+            j++;
+            k++;
+            if ((rez == time_limit) && (k > max))
+            {
+                max = k;
+            }
+        }
+    }
     fclose(in);
+    
+    printf("\nmax number of request in %d is %d\n", time_limit, max);
+    printf("\nDONE in %ld\n", time(NULL) - start);
+    free(a);
     return 0;
 }
