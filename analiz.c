@@ -43,13 +43,17 @@ int main (int argc, char * argv[])
     struct tm u2;
     char local_time2[100];
     char strtime1[80], strtime2[80];
+    char strtimestart[80], strtimeend[80];
     int time_limit, rez;
     int *a;
     int i = 0, j, size, k, max = 0;
 
     in = fopen("access_log_Jul95", "r");
+
+    printf("\ntime_limit = ");
+    scanf("%d", &time_limit);
     fscanf(in, "%s - - [%s -0400] \"%s %s HTTP/1.0\" %d %s\n", remote_addr, local_time, command, request, &status, bytes_send);
-    a = (int*)malloc(8000000);
+    a = (int*)malloc(sizeof(int) * number_of_requests);
     while (!feof(in))
     {
         strptime(local_time, "%d/%b/%Y:%H:%M:%S", &u1);
@@ -63,8 +67,6 @@ int main (int argc, char * argv[])
         i++;
         strcpy(local_time, local_time2);
     }
-    printf("\n time_limit = ");
-    scanf("%d", &time_limit);
     size = i;
     for (i = 0; i < size; i++)
     {
@@ -88,7 +90,8 @@ int main (int argc, char * argv[])
     }
     fclose(in);
     
-    printf("\nmax number of request in %d is %d\n", time_limit, max);
+    printf("\nmax number of request in %d seconds is %d\n", time_limit, max);
+    //printf("started at: %s\nended at: %s\n", strtimestart, strtimeend);
     printf("\nDONE in %ld\n", time(NULL) - start);
     free(a);
     return 0;
