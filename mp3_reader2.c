@@ -162,13 +162,6 @@ int main (int argc, char * argv[])
         set_value = buf;
         set(music, in, prop_name, set_value);
     }
-    /*
-    char set_value[100];
-    strcpy(set_value, "--value=Test");
-    char *buf = strtok(set_value, "=");
-    buf = strtok(NULL, "=");
-    strcpy(set_value, buf);
-    set(music, in, "--set=COMM", set_value);*/
 
     printf("\nDONE\n");
     return 0;
