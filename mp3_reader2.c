@@ -25,19 +25,19 @@ typedef struct ID3v2_frame
 ID3v2_header header;
 ID3v2_frame frame;
 
-int btoi (char bytes[4], int existance)
+int btoi (char bytes[4], int header_or_not)
 {
-    if (header.version[0] == 4 || existance)
+    if (header.version[0] == 4 || header_or_not)
     {
         return bytes[0] << 21 | bytes[1] << 14 | bytes[2] << 7 | bytes[3];
     }
     return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
 }
 
-void itob (int value, char *bytes, int existance)
+void itob (int value, char *bytes, int header_or_not)
 {
     int bits = 127;
-    if (header.version[0] == 4 || existance)
+    if (header.version[0] == 4 || header_or_not)
     {
         bytes[3] = (char)(value & bits);
         bytes[2] = (char)((value >> 7) & bits);
@@ -68,7 +68,7 @@ void show (char *file_path)
         char *frame_consict;
 
         frame_size = btoi(frame.size, 0);
-        frame_consict = (char*)malloc(frame_size); //* sizeof(char));
+        frame_consict = (char*)malloc(frame_size);
         fgets(frame_consict, frame_size, in);
 
         printf("pos: %5ld | id: %5s | size: %5d | value: ", ftell(in), frame.name, frame_size);
@@ -84,6 +84,7 @@ void show (char *file_path)
         fread(&frame, 1, frame_bytes, in);
         free(frame_consict);
     }
+    fclose(in);
 }
 
 int get (char *file_path, char *command)
@@ -126,6 +127,8 @@ int get (char *file_path, char *command)
         fread(&frame, 1, frame_bytes, in);
         free(frame_const);
     }
+
+    fclose(in);
     return pos;
 }
 
@@ -152,7 +155,7 @@ void set(char* file_path, char* command, char* value)
     fread(&header, 1, header_bytes, in);
 
     new_header = btoi(header.size, 1) + strlen(value) - frame_size + 1;
-    itob(new_header, header.size, in);
+    itob(new_header, header.size, 1);
 
     fwrite(&header, 1, header_bytes, out);
 
@@ -173,14 +176,70 @@ void set(char* file_path, char* command, char* value)
     fread(end_of_file, 1, last_pos - pos_now, in);
     fwrite(end_of_file, 1, last_pos - pos_now, out);
     get("/Users/macbook/Desktop/temp.txt", command);
+
+    fclose(in);
+    fclose(out);
 }
 
 int main (int argc, char * argv[])
 {
+    char filename[200];
+    /*
+    char *buf = strtok(argv[1], "=");
+    buf = strtok(NULL, "=");
+    strcpy(filename, buf);
+    buf = NULL;
+
+    if (!strcmp(argv[2], "--show"))
+    {
+        show(filename);
+    }
+
+    buf = strtok(argv[2], "=");
+
+    if (!strcmp(buf, "--get"))
+    {
+        char *prop_name;
+        buf = strtok(NULL, "=");
+        prop_name = buf;
+
+        get(filename, prop_name);
+    }
+    
+    if (!strcmp(buf, "--set"))
+    {
+        char *prop_name;
+        buf = strtok(NULL, "=");
+        prop_name = buf;
+
+        char *set_value;
+        buf = strtok(argv[3], "=");
+        buf = strtok(NULL, "=");
+        set_value = buf;
+
+        set(filename, prop_name, set_value);
+    }*/
+
+    //setlocale(LC_ALL, "Russian");
+    
+    printf("\nFIRST mp3\n");
+    strcpy(filename, "/Users/macbook/Desktop/C418 - Sweden (Minecraft OST).mp3");
     printf("\nFunction show\n");
-    show("/Users/macbook/Desktop/C418 - Sweden (Minecraft OST).mp3");
+    show(filename);
     printf("\nFunction get\n");
-    get("/Users/macbook/Desktop/C418 - Sweden (Minecraft OST).mp3", "TIT2");
+    get(filename, "TIT2");
+    printf("\nFunction set\n");
+    set(filename, "TPE1", "Test");
+
+    printf("\nSECOND mp3\n");
+    strcpy(filename, "/Users/macbook/Library/Containers/maccatalyst.com.frontrow.vlog/Data/Documents/FRVideoEditor/MusicLibrary/Download/Never Let Me Go.mp3");
+    printf("\nFunction show\n");
+    show(filename);
+    printf("\nFunction get\n");
+    get(filename, "TIT2");
+    printf("\nFunction set\n");
+    set(filename, "TSSE", "Test");
+
     printf("\nDONE\n");
     return 0;
 }
