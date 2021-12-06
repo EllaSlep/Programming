@@ -232,7 +232,7 @@ int main (int argc, char * argv[])
     set(filename, "TPE1", "Test");
 
     printf("\nSECOND mp3\n");
-    strcpy(filename, "/Users/macbook/Library/Containers/maccatalyst.com.frontrow.vlog/Data/Documents/FRVideoEditor/MusicLibrary/Download/Never Let Me Go.mp3");
+    strcpy(filename, "/Users/macbook/Music/iTunes/iTunes Media/Music/Ou noy O no/Unknown Album/2-08 o no no no (not clip).mp3");
     printf("\nFunction show\n");
     show(filename);
     printf("\nFunction get\n");
