@@ -5,11 +5,13 @@
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
-      "args": [],
+      "args": [
+        ""
+      ],
       "stopAtEntry": true,
-      "cwd": "/Users/macbook/Desktop/ИТМО/Programming/Programming",
+      "cwd": "/Users/macbook/Desktop/ИТМО/программирование/Programming",
       "environment": [],
-      "program": "/Users/macbook/Desktop/ИТМО/Programming/Programming/build/Debug/outDebug",
+      "program": "/Users/macbook/Desktop/ИТМО/программирование/Programming/build/Debug/outDebug",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "lldb",
       "externalConsole": true
