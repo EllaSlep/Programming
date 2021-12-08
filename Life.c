@@ -165,16 +165,30 @@ void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int ge
         scanLineSize = realWidth + (4 - (realWidth % 4));
     }
 
-    print_debug("before writing it's okey!\n");
+    int scanLine[scanLineSize];
 
-    int y = height - 1;
+    print_debug("before writing information it's okey!\n");
+
+    /* int y = height - 1, x = 0;
+    print_debug("y = %d\n", y);
+    while (pixelArr[y][x] == NULL){
+        --y;
+    }
+    print_debug("y = %d\n", y); */
+    int y = height - 1, x;
+    print_debug("y = %d\n", y);
+    while (pixelArr[y] == NULL){
+        --y;
+    }
+    print_debug("y = %d\n", y);
+
     while (y >=0){
-        int scanLine[scanLineSize]; //char* scanLine[scanLineSize]; //= calloc(scanLineSize, sizeof(char));
-        int x = 0;
-        while (x < width){
+        //char* scanLine[scanLineSize]; //= calloc(scanLineSize, sizeof(char));
+        x = 0;
+        while (x < width && pixelArr[y][x] != NULL){
             int curBytePosition = x / 8;
             if (pixelArr[y][x] == 0){
-                scanLine[curBytePosition] = (char)(1 << (7 - x % 8)) bitor scanLine[curBytePosition];//bitor = или
+                scanLine[curBytePosition] = (char)(1 << (7 - x % 8)) bitor scanLine[curBytePosition]; //bitor = или
             }
             ++x;
         }
@@ -277,12 +291,9 @@ int getNeighborCount(int **table, int row, int col, int height, int width) {//с
     return neighborCounter;
 }
 
-
-
-
 int main(int argc, char** argv) {
 
-    MAX_ITER = 5;
+    MAX_ITER = 1;
     DUMP_FREQ = 1;
 /**
     if (argc < 3){   // число аргументов точно не может быть < 3
@@ -316,7 +327,7 @@ int main(int argc, char** argv) {
 
 
 */
-    DIRECTORY_NAME="Users/macbook/Downloads";
+    DIRECTORY_NAME="/Users/macbook/Desktop/ИТМО/программирование";
 
     //FILE *fin = fopen(INPUT_FILE_NAME, "rb");
     FILE *fin = fopen("/Users/macbook/Downloads/Pulsar.bmp", "rb");
