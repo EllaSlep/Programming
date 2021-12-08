@@ -12,16 +12,9 @@
     #define print_debug(format, ...)
 #endif
 
-#define LIVE_CELL  1
-#define NOT_LIVE_CELL 0
+#define ALIVE  1
+#define NOT_ALIVE 0
 #define MAX_DIRECTORY_LEN 1000
-
-static char USAGE_MESSAGE[] = "List of commands: \n"
-                              "--input input_file.bmp \t name of monochrome input .bmp file\n"
-                              "--output dir_name \t Name of directory for saving files\n"
-                              "--max_iter N \t [OPTIONAL] The maximum number of generations that can emulate program. Optional parameter, by default infinity\n"
-                              "--dump_freq N \t [OPTIONAL] The frequency with which the program should save generations as an image. by default, it is equal to 1\n";
-                              
 
 int MAX_ITER; // (inf)
 int DUMP_FREQ; // save frequency
@@ -31,47 +24,26 @@ char* DIRECTORY_NAME;
 #pragma pack(push, 1)
 typedef struct stBitMapFile {
 
-    uint16_t bfType;            //Метка BM
-    uint32_t bfSize;            //Длина в байтах
-    uint16_t bfRes1;            //Резерв1
-    uint16_t bfRes2;           //Резерв2
-    uint32_t bfOffs;            //Смещение области данных(положение пиксельных данных)
+    uint16_t bmp_header_Type;            //Метка BM
+    uint32_t bmp_header_Size;            //Длина в байтах
+    uint16_t bmp_header_res1;            //Резерв1
+    uint16_t bmp_header_res2;           //Резерв2
+    uint32_t bmp_header_end;            //Смещение области данных(положение пиксельных данных)
 
     //Начало BITMAP_INFO:(версия 3(не CORE))
-    uint32_t biSize;            //Длина BITMAP_INFO
-    int32_t biWidth;                //Ширина картинки
-    int32_t biHeight;              //высота картинки
-    uint16_t biPlanes;            //Число плоскостей
-    uint16_t biBitCnt;            //Бит на пиксел
-    uint32_t biCompr;            //Тип сжатия
-    uint32_t biSizeIm;            //Размер изображения в байтах
-    int32_t biXPels;                //Разрешение по горизонтали
-    int32_t biYPels;                //Разрешение по вертикали
-    uint32_t biClrUsed;            //Количество используемых цветов
-    uint32_t biClrImp;            //Количество основных цветов
+    uint32_t bmp_information_Size;            //Длина BITMAP_INFO
+    int32_t bmp_information_width;                //Ширина картинки
+    int32_t bmp_information_height;              //высота картинки
+    uint16_t bmp_information_planes;            //Число плоскостей
+    uint16_t bmp_information_bit_per_pixel;            //Бит на пиксел
+    uint32_t bmp_information_compression;            //Тип сжатия
+    uint32_t bmp_information_image_size;            //Размер изображения в байтах
+    int32_t bmp_information_X_pixels;                //Разрешение по горизонтали
+    int32_t bmp_information_Y_pixels;                //Разрешение по вертикали
+    uint32_t bmp_information_colours_used;            //Количество используемых цветов
+    uint32_t bmp_information_colours_major;            //Количество основных цветов
 } bitMapFile;
 #pragma pack(pop)
-
-void printUsage(char* err){
-    print_debug("calling printUsage\n");
-
-    printf("Error: %s\n", err);
-    printf("%s", USAGE_MESSAGE);
-
-    print_debug("printUsage correct\n");
-}
-
-void openCorrect(FILE* file){
-    print_debug("calling openCorrect\n");
-
-    if (file == NULL){
-        printUsage("Can't open a file");
-        exit(-1);
-    }
-
-    print_debug("openCorrect correct\n");
-}
-
 
 void freePixelArray(int height, int** arr){
     print_debug("calling freePixelArray\n");
@@ -89,7 +61,6 @@ void freePixelArray(int height, int** arr){
     print_debug("freePixelArray correct\n");
 }
 
-
 int** mallocPixelArray(int height, int width){
     print_debug("calling mallocPixelArray\n");
 
@@ -102,13 +73,12 @@ int** mallocPixelArray(int height, int width){
     return resArr;
 }
 
-
 //мы читаем наш файл и переводим
-int** bmpToPixelsArray(int height, int width, FILE* fin, bitMapFile bmp){
+int** bmpToPixelsArray(int height, int width, FILE* in, bitMapFile bmp){
     print_debug("calling bmpToPixelsArray\n");
 
     int **resArr = mallocPixelArray(height, width);
-    fseek(fin, (int)bmp.bfOffs, SEEK_SET);  // перемещаем указатель на начало считываения пикселей(начало изображения)
+    fseek(in, (int)bmp.bmp_header_end, SEEK_SET);
 
     //мы находим ширину в байтах деля на 8 и если у нас не делится без остатка,то добавляем 1 байт(что б не было обрезания)
     //теперь scanLineSize это ширина картинки
@@ -117,19 +87,19 @@ int** bmpToPixelsArray(int height, int width, FILE* fin, bitMapFile bmp){
     if (realWidth % 4 != 0){//байт в строке должно быть кратно 4
         scanLineSize = realWidth + (4 - (realWidth % 4));
     }
-    int scanLine[scanLineSize]; //char* scanLine[scanLineSize]; //= calloc(scanLineSize, sizeof(char));
+    int scanLine[scanLineSize]; //char* scanLine = calloc(scanLineSize, sizeof(char));
 
     for (int y = height - 1; y >= 0; y--){  // записываем снизу вверх, т.к. пиксели считываются с левого нижнего угла
-        fread(scanLine, 1, scanLineSize, fin);  // cчитываем строку с учётом отступов
+        fread(scanLine, 1, scanLineSize, in);  // cчитываем строку с учётом отступов
         for (int x = 0; x < width; x++){
             int curBytePos = x / 8;//идём по байтам
             int curBit = 1 << (7 - x % 8);
             int pixel = scanLine[curBytePos] & curBit;
             if (pixel == 0){        // если бит равен 1(белый цвет), то будем помечать его как живую клетку, если равен нулю - нулём(мёртв)
-                resArr[y][x] = LIVE_CELL;
+                resArr[y][x] = ALIVE;
             }
             else{
-                resArr[y][x] = NOT_LIVE_CELL;
+                resArr[y][x] = NOT_ALIVE;
             }
         }
     }
@@ -138,26 +108,25 @@ int** bmpToPixelsArray(int height, int width, FILE* fin, bitMapFile bmp){
     return resArr;
 }
 
-
-//char *itoa( int value, char * string, int radix );
-
 void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int generationNumber, int offsetLen, char* directoryName){
     print_debug("calling pixelArrayToBmp\n");
 
-    char strGenNumber[10]; //= calloc(10, sizeof(char));
+    char strGenNumber[10]; // = calloc(10, sizeof(char));
     sprintf(strGenNumber,"%d",generationNumber);
-    //itoa(generationNumber, strGenNumber, 10);
-    char fullFilePath[MAX_DIRECTORY_LEN]; //= calloc(MAX_DIRECTORY_LEN, sizeof(char));
+    char fullFilePath[MAX_DIRECTORY_LEN]; // = calloc(MAX_DIRECTORY_LEN, sizeof(char));
     strcpy(fullFilePath, directoryName);
     strcat(fullFilePath, "/");
     strcat(fullFilePath, strGenNumber);
     strcat(fullFilePath, ".bmp");
 
     print_debug("%s + / + %s + .bmp = %s\n", directoryName, strGenNumber, fullFilePath);
-    FILE *fout = fopen(fullFilePath, "wb");
-    openCorrect(fout);
+    FILE *out = fopen(fullFilePath, "wb");
+    if (out == NULL){
+        printf("Can't open a file\n");
+        exit(-1);
+    }
 
-    fwrite(offset, 1, offsetLen, fout); // записываем все байты до самой битмапы
+    fwrite(offset, 1, offsetLen, out); // записываем все байты до самой битмапы
 
     int realWidth = (width / 8) + ((width % 8 > 0) ? 1 : 0);    // действительная ширина где находятся значащие биты
     int scanLineSize = realWidth;
@@ -168,6 +137,8 @@ void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int ge
     int scanLine[scanLineSize];
 
     print_debug("before writing information it's okey!\n");
+
+//ERROR//
 
     /* int y = height - 1, x = 0;
     print_debug("y = %d\n", y);
@@ -183,7 +154,6 @@ void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int ge
     print_debug("y = %d\n", y);
 
     while (y >=0){
-        //char* scanLine[scanLineSize]; //= calloc(scanLineSize, sizeof(char));
         x = 0;
         while (x < width && pixelArr[y][x] != NULL){
             int curBytePosition = x / 8;
@@ -192,76 +162,28 @@ void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int ge
             }
             ++x;
         }
-        fwrite(scanLine, 1, scanLineSize, fout);
+        fwrite(scanLine, 1, scanLineSize, out);
         --y;
     }
     /*
     for (int y = height - 1; y >= 0; y--){
-        int scanLine[scanLineSize]; //char* scanLine[scanLineSize]; //= calloc(scanLineSize, sizeof(char));
+        int scanLine[scanLineSize]; //char* scanLine = calloc(scanLineSize, sizeof(char));
         for (int x = 0; x < width; x++){
             int curBytePosition = x / 8;
             if (pixelArr[y][x] == 0){
                 scanLine[curBytePosition] = (char)(1 << (7 - x % 8)) bitor scanLine[curBytePosition];//bitor = или
             }
         }
-        fwrite(scanLine, 1, scanLineSize, fout);
+        fwrite(scanLine, 1, scanLineSize, out);
         //free(scanLine);
     }
     */
     
-    fclose(fout);
+    fclose(out);
     //free(fullFilePath);
     //free(strGenNumber);
 
     print_debug("pixelArrayToBmp correct\n");
-}
-
-
-int neighbourCheck(int** pixelArr, int row, int col, int height, int width);
-int getNeighborCount(int **table, int row, int col, int height, int width);
-
-int **gameLife(int **pixelArr, int height, int width) {
-    print_debug("calling gameLife\n");
-    
-    print_debug("doing tempArr\n");
-
-    int **tempArr = mallocPixelArray(height, width);
-    print_debug("tempArr completed\n");
-
-    int neighbourCnt;
-
-    int y = 0, x = 0;
-    while (y < height && tempArr[y][x] != NULL){
-        x = 0;
-        while (x < width && tempArr[y][x] != NULL){
-            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
-            if ((neighbourCnt == 3) or
-                (neighbourCnt == 2 and pixelArr[y][x] == LIVE_CELL)) {
-                tempArr[y][x] = LIVE_CELL;
-            }
-            else {
-                tempArr[y][x] = NOT_LIVE_CELL;
-            }
-            ++x;
-        }
-        ++y;
-    }
-    /*for (int y = 0; y < height; y++) {                  // проверка всех правил игры
-        for (int x = 0; x < width; x++) {
-            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
-            if ((neighbourCnt == 3) or
-                (neighbourCnt == 2 and pixelArr[y][x] == LIVE_CELL)) {
-                tempArr[y][x] = LIVE_CELL;
-            }
-            else {
-                tempArr[y][x] = NOT_LIVE_CELL;
-            }
-        }
-    }*/
-
-    freePixelArray(height, pixelArr);
-    print_debug("gameLife correct\n");
-    return tempArr;
 }
 
 //если клетка жива -> return 1
@@ -269,7 +191,7 @@ int neighbourCheck(int **pixelArr, int row, int col, int height, int width) {// 
 
     if (row < 0 || row >= height || col < 0 || col >= width) {
         return 0;
-    } else if (pixelArr[row][col] != LIVE_CELL){
+    } else if (pixelArr[row][col] != ALIVE){
         return 0;
     }
     else {
@@ -291,13 +213,57 @@ int getNeighborCount(int **table, int row, int col, int height, int width) {//с
     return neighborCounter;
 }
 
+int **gameLife(int **pixelArr, int height, int width) {
+    print_debug("calling gameLife\n");
+    
+    print_debug("doing tempArr\n");
+
+    int **tempArr = mallocPixelArray(height, width);
+    print_debug("tempArr completed\n");
+
+    int neighbourCnt;
+
+    int y = 0, x = 0;
+    while (y < height && tempArr[y][x] != NULL){
+        x = 0;
+        while (x < width && tempArr[y][x] != NULL){
+            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
+            if ((neighbourCnt == 3) or
+                (neighbourCnt == 2 and pixelArr[y][x] == ALIVE)) {
+                tempArr[y][x] = ALIVE;
+            }
+            else {
+                tempArr[y][x] = NOT_ALIVE;
+            }
+            ++x;
+        }
+        ++y;
+    }
+    /*for (int y = 0; y < height; y++) {                  // проверка всех правил игры
+        for (int x = 0; x < width; x++) {
+            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
+            if ((neighbourCnt == 3) or
+                (neighbourCnt == 2 and pixelArr[y][x] == ALIVE)) {
+                tempArr[y][x] = ALIVE;
+            }
+            else {
+                tempArr[y][x] = NOT_ALIVE;
+            }
+        }
+    }*/
+
+    freePixelArray(height, pixelArr);
+    print_debug("gameLife correct\n");
+    return tempArr;
+}
+
 int main(int argc, char** argv) {
 
     MAX_ITER = 1;
     DUMP_FREQ = 1;
-/**
-    if (argc < 3){   // число аргументов точно не может быть < 3
-        printUsage("Invalid number of arguments");
+/*
+    if (argc < 5){ 
+        printf("Invalid number of arguments\n");
         exit(-2);
     }
     for (int i = 1; i < argc; i += 2){
@@ -317,11 +283,11 @@ int main(int argc, char** argv) {
     }
 
     if (INPUT_FILE_NAME == NULL){
-        printUsage("The input file name is not specified");
+        printf("The input file name is not specified\n");
         exit(-1);
     }
     if (DIRECTORY_NAME == NULL){
-        printUsage("The output directory is not specified");
+        printf("The output directory is not specified\n");
         exit(-1);
     }
 
@@ -329,34 +295,36 @@ int main(int argc, char** argv) {
 */
     DIRECTORY_NAME="/Users/macbook/Desktop/ИТМО/программирование";
 
-    //FILE *fin = fopen(INPUT_FILE_NAME, "rb");
-    FILE *fin = fopen("/Users/macbook/Downloads/Pulsar.bmp", "rb");
-    openCorrect(fin);//проверяем, а открылась ли корректно
+    //FILE *in = fopen(INPUT_FILE_NAME, "rb");
+    FILE *in = fopen("/Users/macbook/Downloads/Pulsar.bmp", "rb");
+    if (in == NULL){
+        printf("Can't open a file\n");
+        exit(-1);
+    }
 
     bitMapFile bmp;
 
-    fread(&bmp, 1, sizeof(bitMapFile), fin);//читаем Header
-    char offset[bmp.bfOffs];  //= calloc(bmp.bfOffs, sizeof(char));//bfOffs-положение пиксельных данных
-    fseek(fin, 0, SEEK_SET);//перемещаемся на пиксельные данные
-    fread(offset, 1, bmp.bfOffs, fin);//offset-где находятся пиксельные данные
+    fread(&bmp, 1, sizeof(bitMapFile), in);//читаем Header
+    char offset[bmp.bmp_header_end];  //= calloc(bmp.bmp_header_end, sizeof(char));//bmp_header_end-положение пиксельных данных
+    fseek(in, 0, SEEK_SET);//перемещаемся на пиксельные данные
+    fread(offset, 1, bmp.bmp_header_end, in);//offset-где находятся пиксельные данные
 
-    int **pixelArr = bmpToPixelsArray(bmp.biHeight, bmp.biWidth, fin, bmp);//pixelArr - картинка в виде массива
+    int **pixelArr = bmpToPixelsArray(bmp.bmp_information_height, bmp.bmp_information_width, in, bmp);//pixelArr - картинка в виде массива
 
 
     for (int i = 0; i < MAX_ITER; i++){
-        pixelArr = gameLife(pixelArr, bmp.biHeight, bmp.biWidth);//запускаем игру 1 раз(т.е продвинемся на 1 поколение вперёд)
+        pixelArr = gameLife(pixelArr, bmp.bmp_information_height, bmp.bmp_information_width);//запускаем игру 1 раз(т.е продвинемся на 1 поколение вперёд)
         //pixelArr-наша новая картинка после завершения 1 расстановки
         if (i % DUMP_FREQ == 0){//DUMP_FREQ частота сохранения поколения в виде картинки(т.е каждый DUMP_FREQй раз мы сохраняем картинку)
             //конвертируем массив обратно в картинку. Поколения начинаются с 1 -> i+1
-            pixelArrayToBmp(pixelArr, bmp.biHeight, bmp.biWidth, offset, i + 1, (int)bmp.bfOffs, DIRECTORY_NAME);
+            pixelArrayToBmp(pixelArr, bmp.bmp_information_height, bmp.bmp_information_width, offset, i + 1, (int)bmp.bmp_header_end, DIRECTORY_NAME);
         }
     }
 
 
-    freePixelArray(bmp.biHeight, pixelArr);
-    fclose(fin);
+    freePixelArray(bmp.bmp_information_height, pixelArr);
+    fclose(in);
     //free(offset);
     //free(INPUT_FILE_NAME);
     //free(DIRECTORY_NAME);
-
 }
