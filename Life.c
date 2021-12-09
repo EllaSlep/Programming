@@ -6,7 +6,7 @@
 
 //#define DEBUG
 
-#define HEADER_SIZE 62// Заголовок BMP составляет 54 байта + 8 байтов палитры(BITMAPFILEHEADER(14б)+BITMAPINFO(40б))
+#define HEADER_SIZE 62// Заголовок BMP составляет 54 байта + 8 байтов палитры
 #define MAX_PATH_LEN 200
 #define MAX_NAME_LEN 120
 
@@ -18,8 +18,8 @@
 
 typedef struct image{
     uint8_t *header;
-    uint8_t *image;//массив для картинки
-    uint8_t *data;//само изображение
+    uint8_t *image;
+    uint8_t *data;
     int file_size;
     int header_size;
 }image;
@@ -44,26 +44,25 @@ image bmp_to_image(FILE *f, int* _width, int* _height){
     print_debug("offset = %d\n", offset);
 
     // колличество байт должно быть кратно 4
-    int lineSize = (width / 32) * 4 + (width % 32 != 0 ? 4 : 0);//наша ширина в байтах с округлением
-    int file_size = lineSize * height;//ширина*высоту=file_size
+    int lineSize = (width / 32) * 4 + (width % 32 != 0 ? 4 : 0);
+    int file_size = lineSize * height;
 
     uint8_t *img = malloc(width * height);
-    uint8_t *data = malloc(file_size); // готовим место для картинки
+    uint8_t *data = malloc(file_size); 
 
     fseek(f, (long) offset, SEEK_SET);
     fread(data, 1, file_size, f);
 
     print_debug("width = %d; height = %d; bytes in line: %d; total size: %d \n", width, height, lineSize , file_size);
 
-    // декодируем биты
     int current_byte;
-    for(int i = 0, reversed_i = height - 1; i < height ; i++, reversed_i--) {//идём с левого нижнего угла
+    for(int i = 0, reversed_i = height - 1; i < height ; i++, reversed_i--) {
         for(int j = 0; j < width; j++) {
             current_byte = j / 8;
 
             uint8_t data_byte = data[i * lineSize + current_byte];
 
-            uint8_t mask = 0x80 >> j % 8; // 2^7
+            uint8_t mask = 0x80 >> j % 8; 
             int pos = reversed_i * width + j;
             img[pos] = (data_byte & mask) ? 1 : 0;
         }
@@ -90,7 +89,7 @@ void matrix_to_data(int n, int m, uint8_t **matrix, uint8_t *data){
                 current_byte = current_byte | mask;
             }
 
-            if ((j % 8) == 0 || j == m) { // кладём 8 бит в текущий байт
+            if ((j % 8) == 0 || j == m) { 
                 data[current_position] = current_byte;
                 current_position++;
                 current_byte = 0;
@@ -119,7 +118,7 @@ uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target){
         for (int j = 1; j < m + 1; j++){
             if (current[i][j] == '0'){//если эта клетка не живая
                 int count = count_neigbours(0, current, i, j);
-                if (count == 3){//если у нас 3 живых соседа -> новая жизнь
+                if (count == 3){//если у нас 3 живых соседа
                     target[i][j] = '1';
                 }
                 else{//иначе клетка умирает
@@ -224,10 +223,10 @@ int main(int argc, char *argv[]) {
 
     int width, height;
     
-    image bmp_struct = bmp_to_image(in, &width, &height);
-    uint8_t *img = bmp_struct.image;
-    uint8_t *bmp_header = bmp_struct.header;
-    uint8_t *data = bmp_struct.data;
+    image BMP = bmp_to_image(in, &width, &height);
+    uint8_t *img = BMP.image;
+    uint8_t *bmp_header = BMP.header;
+    uint8_t *data = BMP.data;
 
     int n = height;
     int m = width;
@@ -287,8 +286,8 @@ int main(int argc, char *argv[]) {
                 return 1;
             }
             matrix_to_data(n, m, current_matrix, data);//записываем в виде картинки(data) полученый массив(current_matrix)
-            fwrite(bmp_header, sizeof(uint8_t), bmp_struct.header_size, out);//перезаписываем header в новый файл
-            fwrite(data, sizeof(uint8_t), bmp_struct.file_size, out);
+            fwrite(bmp_header, sizeof(uint8_t), BMP.header_size, out);//перезаписываем header в новый файл
+            fwrite(data, sizeof(uint8_t), BMP.file_size, out);
             print_debug("made image\n");
         }
         iter++;
