@@ -199,6 +199,21 @@ void create_name_for_file(char* str, char*directory_name, char* current_slice, c
     strcat(file_path, ".bmp\0");
 }
 
+void init_second_arr(int height, int width, uint8_t *img, uint8_t **matrix, uint8_t **arr){
+    for(int i = 0 ; i < height ; i++){
+        for(int j = 0 ; j < width ; j++){
+            if (img[i * width + j]){//если клетка не закрашена ->0
+                matrix[i + 1][j + 1] = '0';
+                arr[i + 1][j + 1] = '0';
+            }
+            else{
+                matrix[i + 1][j + 1] = '1';
+                arr[i + 1][j + 1] = '1';
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
 
     char *file_name;
@@ -238,26 +253,14 @@ int main(int argc, char *argv[]) {
     uint8_t **matrix = new_arr(n, m);
     uint8_t **arr = new_arr(n, m);
 
-    for(int i = 0 ; i < height ; i++){
-        for(int j = 0 ; j < width ; j++){
-            if (img[i * width + j]){//если клетка не закрашена ->0
-                matrix[i + 1][j + 1] = '0';
-                arr[i + 1][j + 1] = '0';
-            }
-            else{
-                matrix[i + 1][j + 1] = '1';
-                arr[i + 1][j + 1] = '1';
-            }
-
-        }
-    }
+    init_second_arr(height, width, img, matrix, arr);
 
     uint64_t iter = 0;
     uint32_t step_counter = 0;
     int file_counter = 0;
-    uint8_t **current_matrix;//тот массив который мы будем записывать в файл после игры
-    //начинаем выводить поколения игры
-    while (iter < max_generation){//проверяем сколько поколений
+    uint8_t **current_matrix;
+    
+    while (iter < max_generation){
         if (iter % 2 == 0){
             life_generation(n, m, arr, matrix);//игру на 1 поколение и записываем его в файл если это поколение нужной частоты
             current_matrix = matrix;//новый массив который запишем в новый файл
@@ -266,13 +269,12 @@ int main(int argc, char *argv[]) {
             life_generation(n, m, matrix, arr);
             current_matrix = arr;//новый массив который запишем в новый файл
         }
-        step_counter++;//частота
-        if (step_counter == step){//если это нужное нам повторение которое мы должны вывести
+        step_counter++;
+        if (step_counter == step){
             FILE *out;
-            step_counter = 0;//как только увидели что поколение сошлось мы сбрасываем счётчик
+            step_counter = 0;
             file_counter++;
 
-            //создам новый файл в который запишем новую картинку
             char file_path[MAX_PATH_LEN];
             char current_slice[MAX_NAME_LEN];
             int length = snprintf(NULL, 0, "%d", file_counter);
@@ -285,8 +287,8 @@ int main(int argc, char *argv[]) {
                 printf("can't open file %s\n", file_path);
                 return 1;
             }
-            matrix_to_data(n, m, current_matrix, data);//записываем в виде картинки(data) полученый массив(current_matrix)
-            fwrite(bmp_header, sizeof(uint8_t), BMP.header_size, out);//перезаписываем header в новый файл
+            matrix_to_data(n, m, current_matrix, data);
+            fwrite(bmp_header, sizeof(uint8_t), BMP.header_size, out);
             fwrite(data, sizeof(uint8_t), BMP.file_size, out);
             print_debug("made image\n");
         }
