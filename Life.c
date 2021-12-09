@@ -1,10 +1,14 @@
 #include <stdio.h>
-#include <inttypes.h>
-#include <stdlib.h>
-#include <iso646.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdint.h>
 
-#define DEBUG
+//#define DEBUG
+
+#define HEADER_SIZE 62// Заголовок BMP составляет 54 байта + 8 байтов палитры(BITMAPFILEHEADER(14б)+BITMAPINFO(40б))
+#define MAX_PATH_LEN 200
+#define MAX_NAME_LEN 120
 
 #ifdef DEBUG
     #define print_debug(format, ...) printf("%d\t" format, __LINE__, ##__VA_ARGS__)
@@ -12,319 +16,293 @@
     #define print_debug(format, ...)
 #endif
 
-#define ALIVE  1
-#define NOT_ALIVE 0
-#define MAX_DIRECTORY_LEN 1000
+typedef struct image{
+    uint8_t *header;
+    uint8_t *image;//массив для картинки
+    uint8_t *data;//само изображение
+    int file_size;
+    int header_size;
+}image;
 
-int MAX_ITER; // (inf)
-int DUMP_FREQ; // save frequency
-char* INPUT_FILE_NAME;
-char* DIRECTORY_NAME;
+image bmp_to_image(FILE *f, int* _width, int* _height){
+    image rez;//будем заносить информацию в структуру rez
+    uint8_t *header = malloc(HEADER_SIZE * sizeof(uint8_t));
+    rez.header_size = HEADER_SIZE; // Заголовок BMP составляет 54 байта + 8 байтов палитры
+    fread(header, 1, HEADER_SIZE, f);
 
-#pragma pack(push, 1)
-typedef struct stBitMapFile {
+    uint32_t offset = header[10] + (((uint8_t)header[11]) << 8) + (((uint8_t)header[12]) << 16) + (((uint8_t)header[13]) << 24);//offset-смещение байт
 
-    uint16_t bmp_header_Type;            //Метка BM
-    uint32_t bmp_header_Size;            //Длина в байтах
-    uint16_t bmp_header_res1;            //Резерв1
-    uint16_t bmp_header_res2;           //Резерв2
-    uint32_t bmp_header_end;            //Смещение области данных(положение пиксельных данных)
-
-    //Начало BITMAP_INFO:(версия 3(не CORE))
-    uint32_t bmp_information_Size;            //Длина BITMAP_INFO
-    int32_t bmp_information_width;                //Ширина картинки
-    int32_t bmp_information_height;              //высота картинки
-    uint16_t bmp_information_planes;            //Число плоскостей
-    uint16_t bmp_information_bit_per_pixel;            //Бит на пиксел
-    uint32_t bmp_information_compression;            //Тип сжатия
-    uint32_t bmp_information_image_size;            //Размер изображения в байтах
-    int32_t bmp_information_X_pixels;                //Разрешение по горизонтали
-    int32_t bmp_information_Y_pixels;                //Разрешение по вертикали
-    uint32_t bmp_information_colours_used;            //Количество используемых цветов
-    uint32_t bmp_information_colours_major;            //Количество основных цветов
-} bitMapFile;
-#pragma pack(pop)
-
-void freePixelArray(int height, int** arr){
-    print_debug("calling freePixelArray\n");
-
-    int i = 0;
-    while (i < height && arr[i] != NULL){
-        free(arr[i]);
-        ++i;
+    int width = header[18] + (((uint8_t)header[19]) << 8) + (((uint8_t)header[20]) << 16) + (((uint8_t)header[21]) << 24);
+    int height = header[22] + (((uint8_t)header[23]) << 8) + (((uint8_t)header[24]) << 16) + (((uint8_t)header[25]) << 24);
+    if (offset > HEADER_SIZE){
+        free(header);
+        header = malloc(offset * sizeof(uint8_t));
+        fseek(f, 0, SEEK_SET);
+        fread(header, 1, offset, f);
+        rez.header_size = (int) offset;
     }
-    /*for (int i = 0; i < height; i++){
-        free(arr[i]);
-    }*/
-    free(arr);
+    print_debug("offset = %d\n", offset);
 
-    print_debug("freePixelArray correct\n");
+    // наше колличество байт должно быть кратно 4
+    int lineSize = (width / 32) * 4 + (width % 32 != 0 ? 4 : 0);//наша ширина в байтах с округлением
+    int file_size = lineSize * height;//ширина*высоту=file_size
+
+    uint8_t *img = malloc(width * height);
+    uint8_t *data = malloc(file_size); // готовим место для картинки
+
+    fseek(f, (long) offset, SEEK_SET);
+    fread(data, 1, file_size, f);
+
+    print_debug("width = %d; height = %d; bytes in line: %d; total size: %d \n", width, height, lineSize , file_size);//выведем высоту и ширину
+
+    // декодируем биты
+    int current_byte;
+    for(int i = 0, reversed_i = height - 1; i < height ; i++, reversed_i--) {//идём с левого нижнего угла
+        for(int j = 0; j < width; j++) {
+            current_byte = j / 8;
+
+            uint8_t data_byte = data[i * lineSize + current_byte];//скинируемая линия
+
+            uint8_t mask = 0x80 >> j % 8; // 2^7
+            int pos = reversed_i * width + j;
+            img[pos] = (data_byte & mask) ? 1 : 0;
+        }
+    }
+
+    *_width = width; 
+    *_height = height;
+    rez.header = header;
+    rez.image = img;
+    rez.data = data;
+    rez.file_size = file_size;
+    return rez;
 }
 
-int** mallocPixelArray(int height, int width){
-    print_debug("calling mallocPixelArray\n");
+void matrix_to_data(int n, int m, uint8_t **matrix, uint8_t *data){
+    int current_position = 0;
+    uint8_t current_byte = 0;
 
-    int** resArr = (int**) calloc(height, sizeof (int));
-    for (int i = 0; i < height; i++){
-        resArr[i] = (int*)calloc(width, sizeof(int));
-    }
+    for (int i = n; i >= 1; i--) {
+        for (int j = 1; j <= m; j++) {
 
-    print_debug("mallocPixelArray correct\n");
-    return resArr;
-}
-
-//мы читаем наш файл и переводим
-int** bmpToPixelsArray(int height, int width, FILE* in, bitMapFile bmp){
-    print_debug("calling bmpToPixelsArray\n");
-
-    int **resArr = mallocPixelArray(height, width);
-    fseek(in, (int)bmp.bmp_header_end, SEEK_SET);
-
-    //мы находим ширину в байтах деля на 8 и если у нас не делится без остатка,то добавляем 1 байт(что б не было обрезания)
-    //теперь scanLineSize это ширина картинки
-    int realWidth = (width / 8) + ((width % 8 > 0) ? 1 : 0);    // действительная ширина(в байтах) где находятся значащие биты
-    int scanLineSize = realWidth;
-    if (realWidth % 4 != 0){//байт в строке должно быть кратно 4
-        scanLineSize = realWidth + (4 - (realWidth % 4));
-    }
-    int scanLine[scanLineSize]; //char* scanLine = calloc(scanLineSize, sizeof(char));
-
-    for (int y = height - 1; y >= 0; y--){  // записываем снизу вверх, т.к. пиксели считываются с левого нижнего угла
-        fread(scanLine, 1, scanLineSize, in);  // cчитываем строку с учётом отступов
-        for (int x = 0; x < width; x++){
-            int curBytePos = x / 8;//идём по байтам
-            int curBit = 1 << (7 - x % 8);
-            int pixel = scanLine[curBytePos] & curBit;
-            if (pixel == 0){        // если бит равен 1(белый цвет), то будем помечать его как живую клетку, если равен нулю - нулём(мёртв)
-                resArr[y][x] = ALIVE;
+            uint8_t mask = 0x80 >> (j - 1) % 8;
+            if (matrix[i][j] == '0') {
+                current_byte = current_byte | mask;
             }
-            else{
-                resArr[y][x] = NOT_ALIVE;
+
+            if ((j % 8) == 0 || j == m) { // кладём 8 бит в текущий байт
+                data[current_position] = current_byte;
+                current_position++;
+                current_byte = 0;
+                mask = 0x80;
+            }
+        }
+        while ((current_position) % 4 != 0) {
+            current_position++;
+        }
+    }
+}
+
+int count_neigbours(int count, uint8_t **current, int x, int y){
+    for (int k = -1; k <= 1; k++){
+        for (int p = -1; p <= 1; p++){
+            if (current[x + k][y + p] == '1'){
+                count++;
             }
         }
     }
-    print_debug("bmpToPixelsArray correct\n");
-    //free(scanLine);
-    return resArr;
+    return count;
 }
 
-void pixelArrayToBmp(int** pixelArr, int height, int width, char* offset, int generationNumber, int offsetLen, char* directoryName){
-    print_debug("calling pixelArrayToBmp\n");
-
-    char strGenNumber[10]; // = calloc(10, sizeof(char));
-    sprintf(strGenNumber,"%d",generationNumber);
-    char fullFilePath[MAX_DIRECTORY_LEN]; // = calloc(MAX_DIRECTORY_LEN, sizeof(char));
-    strcpy(fullFilePath, directoryName);
-    strcat(fullFilePath, "/");
-    strcat(fullFilePath, strGenNumber);
-    strcat(fullFilePath, ".bmp");
-
-    print_debug("%s + / + %s + .bmp = %s\n", directoryName, strGenNumber, fullFilePath);
-    FILE *out = fopen(fullFilePath, "wb");
-    if (out == NULL){
-        printf("Can't open a file\n");
-        exit(-1);
-    }
-
-    fwrite(offset, 1, offsetLen, out); // записываем все байты до самой битмапы
-
-    int realWidth = (width / 8) + ((width % 8 > 0) ? 1 : 0);    // действительная ширина где находятся значащие биты
-    int scanLineSize = realWidth;
-    if (realWidth % 4 != 0){
-        scanLineSize = realWidth + (4 - (realWidth % 4));
-    }
-
-    int scanLine[scanLineSize];
-
-    print_debug("before writing information it's okey!\n");
-
-//ERROR//
-
-    /* int y = height - 1, x = 0;
-    print_debug("y = %d\n", y);
-    while (pixelArr[y][x] == NULL){
-        --y;
-    }
-    print_debug("y = %d\n", y); */
-    int y = height - 1, x;
-    print_debug("y = %d\n", y);
-    while (pixelArr[y] == NULL){
-        --y;
-    }
-    print_debug("y = %d\n", y);
-
-    while (y >=0){
-        x = 0;
-        while (x < width && pixelArr[y][x] != NULL){
-            int curBytePosition = x / 8;
-            if (pixelArr[y][x] == 0){
-                scanLine[curBytePosition] = (char)(1 << (7 - x % 8)) bitor scanLine[curBytePosition]; //bitor = или
+uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target){
+    for (int i = 1; i < n + 1; i++){
+        for (int j = 1; j < m + 1; j++){
+            if (current[i][j] == '0'){//если эта клетка не живая
+                int count = count_neigbours(0, current, i, j);
+                if (count == 3){//если у нас 3 живых соседа -> новая жизнь
+                    //print_debug("live %d %d %d\n", i, j, target[i][j]);
+                    target[i][j] = '1';
+                }
+                else{//иначе клетка умирает
+                    target[i][j] = '0';
+                }
             }
-            ++x;
-        }
-        fwrite(scanLine, 1, scanLineSize, out);
-        --y;
-    }
-    /*
-    for (int y = height - 1; y >= 0; y--){
-        int scanLine[scanLineSize]; //char* scanLine = calloc(scanLineSize, sizeof(char));
-        for (int x = 0; x < width; x++){
-            int curBytePosition = x / 8;
-            if (pixelArr[y][x] == 0){
-                scanLine[curBytePosition] = (char)(1 << (7 - x % 8)) bitor scanLine[curBytePosition];//bitor = или
+            else if (current[i][j] == '1'){//если клетка уже была живая
+                int count  = count_neigbours(-1, current, i, j);
+                if (count != 2 && count != 3){//если 2-3 живых соседа, клетка продолжает жить
+                    //print_debug("die %d %d %d\n", i, j, target[i][j]);
+                    target[i][j] = '0';
+                }
+                else{//иначе умирает
+                    target[i][j] = '1';
+                }
             }
         }
-        fwrite(scanLine, 1, scanLineSize, out);
-        //free(scanLine);
     }
-    */
-    
-    fclose(out);
-    //free(fullFilePath);
-    //free(strGenNumber);
-
-    print_debug("pixelArrayToBmp correct\n");
+    print_debug("\n");
+    return target;
 }
 
-//если клетка жива -> return 1
-int neighbourCheck(int **pixelArr, int row, int col, int height, int width) {//  row-строка    col-столбец
+void check_argv(int argc, char *argv[], char *file_name, char *directory_name, uint64_t max_generation, uint32_t step){
+    if (argc < 5 || argc > 9 || (argc % 2 == 0)){
+        if (argc < 5){
+            printf("lack of arguments\n");
+            exit(-1);
+        }
+        if (argc > 9){
+            printf("too many arguments\n");
+            exit(-1);
+        }
+        if (argc % 2 == 0){
+            printf("one of parameters doesn't have indentification\n");
+            exit(-1);
+        }
+    } 
+    for (int i = 1; i < argc; i += 2){
+        print_debug("%s ", argv[i]);
+        if (strcmp(argv[i], "--input") == 0){
+            file_name = argv[i + 1];
+            print_debug("%s\n", file_name);
+        }
+        else if (strcmp(argv[i], "--output") == 0){
+            directory_name = argv[i + 1];
+            print_debug("%s\n", directory_name);
+        }
+        else if (strcmp(argv[i], "--max_iter") == 0){
+            max_generation = atoi(argv[i + 1]);
+            print_debug("%lld\n", max_generation);
+        }
+        else if (strcmp(argv[i], "--dump_freq") == 0){
+            step = atoi(argv[i + 1]);
+            print_debug("%u\n", step);
+        }
+        else {
+            print_debug("wrong parameter: %s\n", argv[i]);
+            exit(-1);
+        }
+    } 
+}
 
-    if (row < 0 || row >= height || col < 0 || col >= width) {
-        return 0;
-    } else if (pixelArr[row][col] != ALIVE){
-        return 0;
+uint8_t **new_arr(int n, int m){
+    uint8_t **matrix = (uint8_t**) malloc((n + 2) * sizeof (uint8_t*));
+    for (int i = 0; i < n + 2; i++){
+        matrix[i] = (uint8_t*) malloc((m + 2) * sizeof (uint8_t));
     }
-    else {
+    return matrix;
+}
+
+int main(int argc, char *argv[]) {
+
+    char *file_name;
+    char *directory_name;
+    uint64_t max_generation = (uint64_t) INFINITY;
+    uint32_t step = 1;
+
+    //check_argv(argc, argv, file_name, directory_name, max_generation, step);
+
+    file_name="/Users/macbook/Desktop/ИТМО/программирование/Pulsar.bmp";
+    directory_name="/Users/macbook/Desktop/ИТМО/программирование";
+    max_generation=2;
+    step=1;
+
+    FILE *in;
+    in = fopen(file_name, "rb");
+
+    if (in == NULL){
+        printf("can't open file %s\n", file_name);
         return 1;
     }
-}
 
-int getNeighborCount(int **table, int row, int col, int height, int width) {//смотрим сколько у нас живых соседних клеток
+    int width, height;
+    //читаем файл и разбиваем его на структуру
+    image bmp_struct = bmp_to_image(in, &width, &height);
+    uint8_t *img = bmp_struct.image;
+    uint8_t *bmp_header = bmp_struct.header;
+    uint8_t *data = bmp_struct.data;
+
+    int n = height;
+    int m = width;
     
-    int neighborCounter = 0;
-    neighborCounter += neighbourCheck(table, row - 1, col - 1, height, width);
-    neighborCounter += neighbourCheck(table, row - 1, col, height, width);
-    neighborCounter += neighbourCheck(table, row - 1, col + 1, height, width);
-    neighborCounter += neighbourCheck(table, row, col - 1, height, width);
-    neighborCounter += neighbourCheck(table, row, col + 1, height, width);
-    neighborCounter += neighbourCheck(table, row + 1, col - 1, height, width);
-    neighborCounter += neighbourCheck(table, row + 1, col, height, width);
-    neighborCounter += neighbourCheck(table, row + 1, col + 1, height, width);
-    return neighborCounter;
-}
+//объявляем 2 двумерных массива- они в начале одинаковы(это наша картинка). берём 1 массив и проводим 1 итерацию игры(образуем 2е поколение)->
+//  ->записываем во второй массив. Теперь берём второй массив и делаем итерацию с ним в игре -> pзаписываем в первый массив
+//  В итоге получается некий шаг(т.е один массив хранит текущее значение картинки, а другой предыдущее
+// В тот в котором хранится предыдущее мы записываем новый шаг(новое значение картинки) и он становится текущим
+    uint8_t **matrix = new_arr(n, m);
+    uint8_t **arr = new_arr(n, m);
 
-int **gameLife(int **pixelArr, int height, int width) {
-    print_debug("calling gameLife\n");
+    for(int i = 0 ; i < height ; i++){
+        for(int j = 0 ; j < width ; j++){
+            if (img[i * width + j]){//если клетка не закрашена ->0
+
+                matrix[i + 1][j + 1] = '0';
+                arr[i + 1][j + 1] = '0';
+            }
+            else{
+                //print_debug("%c ", '1');
+                matrix[i + 1][j + 1] = '1';
+                arr[i + 1][j + 1] = '1';
+            }
+
+        }
+    }
+
+    uint64_t iter = 0;
+    uint32_t step_counter = 0;
+    int file_counter = 0;
+    uint8_t **current_matrix;//тот массив который мы будем записывать в файл после игры
+    //начинаем выводить поколения игры
+    while (iter < max_generation){//проверяем сколько поколений
+        if (iter % 2 == 0){
+            life_generation(n, m, arr, matrix);//игру на 1 поколение и записываем его в файл если это поколение нужной частоты
+            current_matrix = matrix;//новый массив который запишем в новый файл
+        }
+        else {
+            life_generation(n, m, matrix, arr);
+            current_matrix = arr;//новый массив который запишем в новый файл
+        }
+        step_counter++;//частота
+        if (step_counter == step){//если это нужное нам повторение которое мы должны вывести
+            FILE *out;
+            step_counter = 0;//как только увидели что поколение сошлось мы сбрасываем счётчик
+            file_counter++;
+
+            //создам новый файл в который запишем новую картинку
+            char file_path[MAX_PATH_LEN] = "";
+            char current_slice[MAX_NAME_LEN] = "";
+            //strcpy(current_slice, slice_name);
+            int length = snprintf(NULL, 0, "%d", file_counter);
+            char str[length + 1];
+            snprintf(str, length + 1, "%d", file_counter);//поколение начинается с 1 -> +1
+            print_debug("%s\n", str);
+            strcat(current_slice, str);
+            print_debug("current_slice = %s\n", current_slice);
+            strcat(file_path, directory_name);
+            strcat(file_path, "/");
+            strcat(file_path, current_slice);
+            strcat(file_path, ".bmp\0");
+            print_debug("%s\n", file_path);
+
+            out = fopen(file_path, "wb");
+            if (out == NULL){
+                printf("can't open file %s\n", file_path);
+                return 1;
+            }
+            print_debug("fine\n");
+            matrix_to_data(n, m, current_matrix, data);//записываем в виде картинки(data) полученый массив(current_matrix)
+            fwrite(bmp_header, sizeof(uint8_t), bmp_struct.header_size, out);//перезаписываем header в новый файл
+            fwrite(data, sizeof(uint8_t), bmp_struct.file_size, out);
+            print_debug("make image slice\n");
+        }
+        iter++;
+    }
+
+
     
-    print_debug("doing tempArr\n");
-
-    int **tempArr = mallocPixelArray(height, width);
-    print_debug("tempArr completed\n");
-
-    int neighbourCnt;
-
-    int y = 0, x = 0;
-    while (y < height && tempArr[y][x] != NULL){
-        x = 0;
-        while (x < width && tempArr[y][x] != NULL){
-            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
-            if ((neighbourCnt == 3) or
-                (neighbourCnt == 2 and pixelArr[y][x] == ALIVE)) {
-                tempArr[y][x] = ALIVE;
-            }
-            else {
-                tempArr[y][x] = NOT_ALIVE;
-            }
-            ++x;
-        }
-        ++y;
-    }
-    /*for (int y = 0; y < height; y++) {                  // проверка всех правил игры
-        for (int x = 0; x < width; x++) {
-            neighbourCnt = getNeighborCount(pixelArr, y, x, height, width);
-            if ((neighbourCnt == 3) or
-                (neighbourCnt == 2 and pixelArr[y][x] == ALIVE)) {
-                tempArr[y][x] = ALIVE;
-            }
-            else {
-                tempArr[y][x] = NOT_ALIVE;
-            }
-        }
-    }*/
-
-    freePixelArray(height, pixelArr);
-    print_debug("gameLife correct\n");
-    return tempArr;
-}
-
-int main(int argc, char** argv) {
-
-    MAX_ITER = 1;
-    DUMP_FREQ = 1;
-/*
-    if (argc < 5){ 
-        printf("Invalid number of arguments\n");
-        exit(-2);
-    }
-    for (int i = 1; i < argc; i += 2){
-        if (!strcmp("--input", argv[i])){
-            INPUT_FILE_NAME = argv[i + 1];
-        }
-        else if (!strcmp("--output", argv[i])){
-            DIRECTORY_NAME = argv[i + 1];
-        }
-        else if (!strcmp("--max_iter", argv[i])){
-            MAX_ITER = atoi(argv[i + 1]);
-        }
-        else if (!strcmp("--dump_freq", argv[i])){
-            DUMP_FREQ = atoi(argv[i + 1]);
-        }
-
-    }
-
-    if (INPUT_FILE_NAME == NULL){
-        printf("The input file name is not specified\n");
-        exit(-1);
-    }
-    if (DIRECTORY_NAME == NULL){
-        printf("The output directory is not specified\n");
-        exit(-1);
-    }
-
-
-*/
-    DIRECTORY_NAME="/Users/macbook/Desktop/ИТМО/программирование";
-
-    //FILE *in = fopen(INPUT_FILE_NAME, "rb");
-    FILE *in = fopen("/Users/macbook/Downloads/Pulsar.bmp", "rb");
-    if (in == NULL){
-        printf("Can't open a file\n");
-        exit(-1);
-    }
-
-    bitMapFile bmp;
-
-    fread(&bmp, 1, sizeof(bitMapFile), in);//читаем Header
-    char offset[bmp.bmp_header_end];  //= calloc(bmp.bmp_header_end, sizeof(char));//bmp_header_end-положение пиксельных данных
-    fseek(in, 0, SEEK_SET);//перемещаемся на пиксельные данные
-    fread(offset, 1, bmp.bmp_header_end, in);//offset-где находятся пиксельные данные
-
-    int **pixelArr = bmpToPixelsArray(bmp.bmp_information_height, bmp.bmp_information_width, in, bmp);//pixelArr - картинка в виде массива
-
-
-    for (int i = 0; i < MAX_ITER; i++){
-        pixelArr = gameLife(pixelArr, bmp.bmp_information_height, bmp.bmp_information_width);//запускаем игру 1 раз(т.е продвинемся на 1 поколение вперёд)
-        //pixelArr-наша новая картинка после завершения 1 расстановки
-        if (i % DUMP_FREQ == 0){//DUMP_FREQ частота сохранения поколения в виде картинки(т.е каждый DUMP_FREQй раз мы сохраняем картинку)
-            //конвертируем массив обратно в картинку. Поколения начинаются с 1 -> i+1
-            pixelArrayToBmp(pixelArr, bmp.bmp_information_height, bmp.bmp_information_width, offset, i + 1, (int)bmp.bmp_header_end, DIRECTORY_NAME);
-        }
-    }
-
-
-    freePixelArray(bmp.bmp_information_height, pixelArr);
     fclose(in);
-    //free(offset);
-    //free(INPUT_FILE_NAME);
-    //free(DIRECTORY_NAME);
+    free(matrix);
+    free(arr);
+    free(data);
+    free(img);
+    print_debug("\nDONE\n");
+    return 0;
 }
