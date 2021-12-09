@@ -25,7 +25,7 @@ typedef struct image{
 }image;
 
 image bmp_to_image(FILE *f, int* _width, int* _height){
-    image rez;//будем заносить информацию в структуру rez
+    image rez;
     uint8_t *header = malloc(HEADER_SIZE * sizeof(uint8_t));
     rez.header_size = HEADER_SIZE; // Заголовок BMP составляет 54 байта + 8 байтов палитры
     fread(header, 1, HEADER_SIZE, f);
@@ -43,7 +43,7 @@ image bmp_to_image(FILE *f, int* _width, int* _height){
     }
     print_debug("offset = %d\n", offset);
 
-    // наше колличество байт должно быть кратно 4
+    // колличество байт должно быть кратно 4
     int lineSize = (width / 32) * 4 + (width % 32 != 0 ? 4 : 0);//наша ширина в байтах с округлением
     int file_size = lineSize * height;//ширина*высоту=file_size
 
@@ -53,7 +53,7 @@ image bmp_to_image(FILE *f, int* _width, int* _height){
     fseek(f, (long) offset, SEEK_SET);
     fread(data, 1, file_size, f);
 
-    print_debug("width = %d; height = %d; bytes in line: %d; total size: %d \n", width, height, lineSize , file_size);//выведем высоту и ширину
+    print_debug("width = %d; height = %d; bytes in line: %d; total size: %d \n", width, height, lineSize , file_size);
 
     // декодируем биты
     int current_byte;
@@ -61,7 +61,7 @@ image bmp_to_image(FILE *f, int* _width, int* _height){
         for(int j = 0; j < width; j++) {
             current_byte = j / 8;
 
-            uint8_t data_byte = data[i * lineSize + current_byte];//скинируемая линия
+            uint8_t data_byte = data[i * lineSize + current_byte];
 
             uint8_t mask = 0x80 >> j % 8; // 2^7
             int pos = reversed_i * width + j;
@@ -120,7 +120,6 @@ uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target){
             if (current[i][j] == '0'){//если эта клетка не живая
                 int count = count_neigbours(0, current, i, j);
                 if (count == 3){//если у нас 3 живых соседа -> новая жизнь
-                    //print_debug("live %d %d %d\n", i, j, target[i][j]);
                     target[i][j] = '1';
                 }
                 else{//иначе клетка умирает
@@ -129,12 +128,11 @@ uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target){
             }
             else if (current[i][j] == '1'){//если клетка уже была живая
                 int count  = count_neigbours(-1, current, i, j);
-                if (count != 2 && count != 3){//если 2-3 живых соседа, клетка продолжает жить
-                    //print_debug("die %d %d %d\n", i, j, target[i][j]);
-                    target[i][j] = '0';
+                if (count == 2 && count == 3){//если 2-3 живых соседа, клетка продолжает жить
+                    target[i][j] = '1';
                 }
                 else{//иначе умирает
-                    target[i][j] = '1';
+                    target[i][j] = '0';
                 }
             }
         }
@@ -191,6 +189,17 @@ uint8_t **new_arr(int n, int m){
     return matrix;
 }
 
+void create_name_for_file(char* str, char*directory_name, char* current_slice, char*file_path, int length, int file_counter){
+    strcpy(file_path, "");
+    strcpy(current_slice, "");
+    snprintf(str, length + 1, "%d", file_counter);
+    strcat(current_slice, str);
+    strcat(file_path, directory_name);
+    strcat(file_path, "/");
+    strcat(file_path, current_slice);
+    strcat(file_path, ".bmp\0");
+}
+
 int main(int argc, char *argv[]) {
 
     char *file_name;
@@ -214,7 +223,7 @@ int main(int argc, char *argv[]) {
     }
 
     int width, height;
-    //читаем файл и разбиваем его на структуру
+    
     image bmp_struct = bmp_to_image(in, &width, &height);
     uint8_t *img = bmp_struct.image;
     uint8_t *bmp_header = bmp_struct.header;
@@ -233,12 +242,10 @@ int main(int argc, char *argv[]) {
     for(int i = 0 ; i < height ; i++){
         for(int j = 0 ; j < width ; j++){
             if (img[i * width + j]){//если клетка не закрашена ->0
-
                 matrix[i + 1][j + 1] = '0';
                 arr[i + 1][j + 1] = '0';
             }
             else{
-                //print_debug("%c ", '1');
                 matrix[i + 1][j + 1] = '1';
                 arr[i + 1][j + 1] = '1';
             }
@@ -271,32 +278,21 @@ int main(int argc, char *argv[]) {
             char current_slice[MAX_NAME_LEN];
             int length = snprintf(NULL, 0, "%d", file_counter);
             char str[length + 1];
-            
-            snprintf(str, length + 1, "%d", file_counter);//поколение начинается с 1 -> +1
-            print_debug("%s\n", str);
-            strcat(current_slice, str);
-            print_debug("current_slice = %s\n", current_slice);
-            strcat(file_path, directory_name);
-            strcat(file_path, "/");
-            strcat(file_path, current_slice);
-            strcat(file_path, ".bmp\0");
-            print_debug("%s\n", file_path);
+
+            create_name_for_file(str, directory_name, current_slice, file_path, length, file_counter);
 
             out = fopen(file_path, "wb");
             if (out == NULL){
                 printf("can't open file %s\n", file_path);
                 return 1;
             }
-            print_debug("fine\n");
             matrix_to_data(n, m, current_matrix, data);//записываем в виде картинки(data) полученый массив(current_matrix)
             fwrite(bmp_header, sizeof(uint8_t), bmp_struct.header_size, out);//перезаписываем header в новый файл
             fwrite(data, sizeof(uint8_t), bmp_struct.file_size, out);
-            print_debug("make image slice\n");
+            print_debug("made image\n");
         }
         iter++;
     }
-
-
     
     fclose(in);
     free(matrix);
