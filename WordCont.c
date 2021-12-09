@@ -2,79 +2,67 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
-    FILE *in = fopen(argv[2],"r");
+    FILE *in = fopen(argv[2], "r");
 
-    //проверка на корректность открытия
-    if (in==NULL)
+    if (in == NULL)
     {
-        printf("%s\n","Ошибка открытия файла");
+        printf("%s\n", "Ошибка открытия файла");
     }
 
-    // simbols - количество символов
-    // strings -  количество строк
-    // words - количество слов
-    // simbol - какой сейчас символ
-    // lastsimbol - последний считаный символ
-    int simbols, strings, words=0;
-    int simbol,lastsimbol=EOF; 
+    int simbols, strings, words = 0;
+    int simbol, lastsimbol = EOF;
 
-    // если файл не пустой, то выполняем действия:
-    while ((simbol=getc(in)) != EOF)
+    while ((simbol = getc(in)) != EOF)
     {
         //считаем слова
-        if ((simbol==' ')||(simbol=='\n'))
+        if ((simbol == ' ') || (simbol == '\n'))
         {
             ++words;
-            if ((lastsimbol=='\n')&&(simbol=='\n')||(lastsimbol==' ')&&(simbol==' '))
+            if ((lastsimbol == '\n') && (simbol == '\n') || (lastsimbol == ' ') && (simbol == ' '))
             {
                 --words;
             }
-        } 
-        
+        }
+
         // считанный символ передаём в последний
-        lastsimbol=simbol;
+        lastsimbol = simbol;
         ++simbols;
-        
+
         // если есть символ переноса строки - добавляем строчку
-        if (simbol=='\n')
+        if (simbol == '\n')
         {
             ++strings;
         }
-
     }
-    
-    // если в файле что-то было, то нужно добавить 1 к строчкам 
-    // (последнюю строчку чаще всего не отделяют новой строчкой)
-    if ((lastsimbol !=EOF) && (lastsimbol !='\n'))
+
+    if ((lastsimbol != EOF) && (lastsimbol != '\n'))
     {
-        ++ strings;
+        ++strings;
     }
 
     fclose(in);
-
-   
 
     // если файл пуст - сообщаем об этом
     if (lastsimbol == EOF)
     {
         printf("%s\n", "Файл пустой");
     }
-    else 
+    else
     {
-         //-l, --lines -c, --bytes -w, --words
-        if ((strcmp(argv[1],"--bytes") == 0)||(strcmp(argv[1],"-c") == 0))
+        //-l, --lines -c, --bytes -w, --words
+        if ((strcmp(argv[1], "--bytes") == 0) || (strcmp(argv[1], "-c") == 0))
         {
-            printf("%s\t%d\n", "Количество символов:",simbols);
+            printf("%s\t%d\n", "Количество символов:", simbols);
         }
-        if ((strcmp(argv[1],"-w")==0)||(strcmp(argv[1],"--words")==0))
+        if ((strcmp(argv[1], "-w") == 0) || (strcmp(argv[1], "--words") == 0))
         {
-            printf("%s\t%d\n", "Количество слов:",words);
+            printf("%s\t%d\n", "Количество слов:", words);
         }
-        if ((strcmp(argv[1],"-l")==0)||(strcmp(argv[1],"--lines")==0))
+        if ((strcmp(argv[1], "-l") == 0) || (strcmp(argv[1], "--lines") == 0))
         {
-            printf( "%s\t%d\n", "Количество строк:",strings);
+            printf("%s\t%d\n", "Количество строк:", strings);
         }
     }
     printf("DONE");

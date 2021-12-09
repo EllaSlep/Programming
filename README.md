@@ -10,7 +10,7 @@
     2 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#WordCont) <a id="up2"></a>
     3 lab | [Анализ файла](https://github.com/EllaSlep/Programming/blob/main/analiz2.c) | [Текст задания](#Analiz) <a id="up3"></a>
     4 lab | [Чтение mp3](https://github.com/EllaSlep/Programming/blob/main/mp3_reader2.c) | [Текст задания](#mp3_reader) <a id="up4"></a>
-    5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/Life.c) | [Текст задания](#Life) <a id="up5"></a>
+    5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/Life.c) | [Текст задания](#Life) <a id="up5"></a> [^1]
     6 lab | [Архиватор]() | [Текст задания](#arc) <a id="up6"></a>
 
 ***
@@ -151,3 +151,5 @@ ___\$bytes_send___ - количество переданных в ответе �
 >___arc --file data.arc --list___
 
 [Вернуться](#up6)
+
+[^1]:Можете взять [файл]()

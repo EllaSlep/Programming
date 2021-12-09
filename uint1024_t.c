@@ -21,9 +21,10 @@ typedef struct uint1024_t
     int32_t size;
 } uint1024_t;
 
-uint1024_t from_uint(unsigned int x) {
+uint1024_t from_uint(unsigned int x)
+{
     uint1024_t rez;
-    if (x < 1000 * 1000 * 1000) 
+    if (x < 1000 * 1000 * 1000)
     {
         rez.size = 1;
         rez.number = malloc(rez.size * sizeof(uint32_t));
@@ -57,9 +58,9 @@ uint1024_t add_op(uint1024_t x, uint1024_t y)
     rez.size = rezSize;
     rez.number = calloc(rez.size, sizeof(uint32_t));
 
-    for (i = 0; i < rezSize or more; i++) 
+    for (i = 0; i < rezSize or more; i++)
     {
-        if (i == rezSize) 
+        if (i == rezSize)
         {
             rez.number = realloc(rez.number, (rezSize + 1) * sizeof(int32_t));
             rez.number[rezSize] = 0;
@@ -112,17 +113,16 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
     return rez;
 }
 
-uint1024_t mult_op(uint1024_t x, uint1024_t y) 
+uint1024_t mult_op(uint1024_t x, uint1024_t y)
 {
     int rezSize = x.size + y.size;
     int i, j, more;
     uint1024_t rez;
     rez.size = rezSize;
     rez.number = calloc(rez.size, sizeof(uint32_t));
-    
 
     for (i = 0; i < x.size; ++i)
-        for (j = 0, more = 0; j < y.size or more; ++j) 
+        for (j = 0, more = 0; j < y.size or more; ++j)
         {
             long long cur = rez.number[i + j] + x.number[i] * (long long)(j < y.size ? y.number[j] : 0) + more;
             rez.number[i + j] = (uint32_t)(cur % (1000 * 1000 * 1000));
@@ -136,7 +136,7 @@ uint1024_t mult_op(uint1024_t x, uint1024_t y)
     return rez;
 }
 
-void scanf_value(uint1024_t *x) 
+void scanf_value(uint1024_t *x)
 {
     char s[310];
     scanf("%309s", s);
@@ -153,7 +153,7 @@ void scanf_value(uint1024_t *x)
     }
     rez.size = xSize;
     rez.number = malloc(xSize * sizeof(uint32_t));
-    for (int i = sSize, j = -1; i > 0; i -= 9) 
+    for (int i = sSize, j = -1; i > 0; i -= 9)
     {
         j++;
         s[i] = '\0';
@@ -169,7 +169,8 @@ void scanf_value(uint1024_t *x)
     *x = rez;
 }
 
-void printf_value(uint1024_t x) {
+void printf_value(uint1024_t x)
+{
     if (x.number[x.size - 1] == 0 and x.size == 1)
     {
         printf("0\n");
@@ -185,7 +186,8 @@ void printf_value(uint1024_t x) {
     printf("\n");
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     uint1024_t x1, x2, x3, x4, x5, x6;
     int i;
     scanf_value(&x1);
@@ -200,7 +202,7 @@ int main(int argc, char *argv[]) {
     printf_value(add_op(x1, x2));
     printf("\n");
     printf("Test2\n");
-    printf_value(subtr_op(x2,x3));
+    printf_value(subtr_op(x2, x3));
     printf("\n");
     printf("Test3\n");
     printf_value(mult_op(x4, x5));
@@ -225,8 +227,8 @@ int main(int argc, char *argv[]) {
 void itoa(int n, char s[])
 {
     int i = 0;
-    do 
-    {       
+    do
+    {
         s[i++] = n % 10 + '0';
     } while ((n /= 10) > 0);
     s[i] = '\0';
@@ -245,8 +247,8 @@ uint1024_t from_uint(unsigned int x)
 
     number.size = sizeof(x) / sizeof(unsigned int);
     char* c;
-    c = (char *)malloc((sizeof(x)/sizeof(unsigned int)) * sizeof(char)); 
-    int v = 0; 
+    c = (char *)malloc((sizeof(x)/sizeof(unsigned int)) * sizeof(char));
+    int v = 0;
     while (x > 9)
     {
         c[v++] = (x % 10) + '0';
@@ -318,7 +320,7 @@ uint1024_t mult_op(uint1024_t x, uint1024_t y)
     long long summery;
     char mult[620];
     int i, j, more;
-    
+
     for (i = 309; i > -1; i--)
     {
         for (j = 309; j > -1; j--)
@@ -327,7 +329,7 @@ uint1024_t mult_op(uint1024_t x, uint1024_t y)
             int y2 = atoi(&y.number[j]);
             summery = atoi(&mult[i+j]) + x2 * y2;
         }
-        
+
     }
     rez = from_uint(summery);
     return rez;

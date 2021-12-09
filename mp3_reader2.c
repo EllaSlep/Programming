@@ -12,7 +12,7 @@ typedef struct ID3v2_header
     char version[2];
     char flag;
     char size[4];
-}ID3v2_header;
+} ID3v2_header;
 
 typedef struct ID3v2_frame
 {
@@ -20,12 +20,12 @@ typedef struct ID3v2_frame
     char size[4];
     char flag;
     char unicode;
-}ID3v2_frame;
+} ID3v2_frame;
 
 ID3v2_header header;
 ID3v2_frame frame;
 
-int btoi (char bytes[4], int header_or_not)
+int btoi(char bytes[4], int header_or_not)
 {
     if (header.version[0] == 4 || header_or_not)
     {
@@ -34,7 +34,7 @@ int btoi (char bytes[4], int header_or_not)
     return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
 }
 
-void itob (int value, char *bytes, int header_or_not)
+void itob(int value, char *bytes, int header_or_not)
 {
     int bits = 127;
     if (header.version[0] == 4 || header_or_not)
@@ -50,7 +50,7 @@ void itob (int value, char *bytes, int header_or_not)
     bytes[0] = (char)((value >> 24) & bits);
 }
 
-void show (char *file_path)
+void show(char *file_path)
 {
     FILE *in;
     int header_size;
@@ -68,7 +68,7 @@ void show (char *file_path)
         char *frame_consict;
 
         frame_size = btoi(frame.size, 0);
-        frame_consict = (char*)malloc(frame_size);
+        frame_consict = (char *)malloc(frame_size);
         fgets(frame_consict, frame_size, in);
 
         printf("pos: %5ld | id: %5s | size: %5d | value: ", ftell(in), frame.name, frame_size);
@@ -87,7 +87,7 @@ void show (char *file_path)
     fclose(in);
 }
 
-int get (char *file_path, char *command)
+int get(char *file_path, char *command)
 {
     FILE *in;
     int header_size;
@@ -132,7 +132,7 @@ int get (char *file_path, char *command)
     return pos;
 }
 
-void set(char* file_path, char* command, char* value)
+void set(char *file_path, char *command, char *value)
 {
     FILE *in, *out;
     ID3v2_frame frame_now;
@@ -181,7 +181,7 @@ void set(char* file_path, char* command, char* value)
     fclose(out);
 }
 
-int main (int argc, char * argv[])
+int main(int argc, char *argv[])
 {
     char filename[200];
     /*
@@ -205,7 +205,7 @@ int main (int argc, char * argv[])
 
         get(filename, prop_name);
     }
-    
+
     if (!strcmp(buf, "--set"))
     {
         char *prop_name;
@@ -220,8 +220,6 @@ int main (int argc, char * argv[])
         set(filename, prop_name, set_value);
     }*/
 
-    //setlocale(LC_ALL, "Russian");
-    
     printf("\nFIRST mp3\n");
     strcpy(filename, "/Users/macbook/Desktop/C418 - Sweden (Minecraft OST).mp3");
     printf("\nFunction show\n");
@@ -292,7 +290,7 @@ void show(mp3* music, FILE* in)
 
 void get(mp3* music, FILE*in, char *command)
 {
-    
+
     char* tmp = (char*)malloc(ID3_MAX_SIZE * sizeof(char));
     if (tmp == NULL)
     {
@@ -337,7 +335,7 @@ void set(mp3* music, FILE* in, FILE* out, char* command, char* set_value)
         fputc(c, out);
     }
     fputs(set_value, out);
-    
+
     char* tmp = (char*)malloc(ID3_MAX_SIZE * sizeof(char));
     if (tmp == NULL)
     {
@@ -364,7 +362,7 @@ int main (int argc, char * argv[])
     mp3 *music = NULL;
     FILE *in;
     char filename[100];
-    
+
     char *buf = strtok(argv[1], "=");
     buf = strtok(NULL, "=");
     strcpy(filename, buf);
@@ -385,7 +383,7 @@ int main (int argc, char * argv[])
         prop_name = buf;
         get(music, in, prop_name);
     }
-    
+
     FILE*out = fopen("/Users/macbook/Desktop/temp.txt", "w");
     if (!strcmp(buf, "--set"))
     {
