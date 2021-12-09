@@ -267,11 +267,11 @@ int main(int argc, char *argv[]) {
             file_counter++;
 
             //создам новый файл в который запишем новую картинку
-            char file_path[MAX_PATH_LEN] = "";
-            char current_slice[MAX_NAME_LEN] = "";
-            //strcpy(current_slice, slice_name);
+            char file_path[MAX_PATH_LEN];
+            char current_slice[MAX_NAME_LEN];
             int length = snprintf(NULL, 0, "%d", file_counter);
             char str[length + 1];
+            
             snprintf(str, length + 1, "%d", file_counter);//поколение начинается с 1 -> +1
             print_debug("%s\n", str);
             strcat(current_slice, str);
