@@ -13,7 +13,7 @@ typedef struct node{
 
 void push(node** head, char* data){
     node* tmp = malloc(sizeof(node));
-    tmp->value = calloc(strlen(data) + 1, sizeof(char));
+    tmp->value = malloc((strlen(data) + 1) * sizeof(char));
     strcpy(tmp->value, data);
     tmp->next = *head;
     (*head) = tmp;
@@ -61,7 +61,6 @@ int digits(uint64_t x){
 }
 
 void get_info(char **files, int file_number) {
-
     remove("info.txt");
     FILE *info = fopen("info.txt", "wb");
     FILE *current_file;
@@ -89,25 +88,25 @@ void get_info(char **files, int file_number) {
             exit(-1);
         } 
 
-        fseek(current_file, 0, SEEK_END);    // записываем размер архивируемого файла(доходя до конца)
+        fseek(current_file, 0, SEEK_END);
         uint64_t file_size = ftell(current_file);
         int d = digits(file_size);
-        char *str_file_size = calloc(d, sizeof(char));
+        char *str_file_size = malloc(d * sizeof(char));
         sprintf(str_file_size, "%lld", file_size);
         fwrite(str_file_size, 1, d, info);
         fwrite("||", 1, 2, info);
 
         fclose(current_file);
         
-        char *current_file_name; // записываем путь до архивируемого файла
+        char *current_file_name =malloc(strlen(files[i]) * sizeof(char)); 
         if (strrchr(files[i], '\\') == NULL) {
-            current_file_name = calloc(strlen(files[i]), sizeof(char));
+            //current_file_name = malloc(strlen(files[i]) * sizeof(char));
             strcpy(current_file_name, files[i]);
         } else {
-            char *current_file_name = calloc(strlen(files[i]), sizeof(char));
+            //char *current_file_name = malloc(strlen(files[i]) * sizeof(char));
             strcpy(current_file_name, strrchr(files[i], '\\'));
         }
-
+        
         fputs(current_file_name, info);
         fwrite("||", 1, 2, info);
     }
@@ -167,7 +166,7 @@ void extract(char* arc_name){
     int info_block_size;
     fread(&info_block_size, 4, 1, arc);
 
-    char *info_block = calloc(info_block_size + 1, sizeof(char));
+    char *info_block = malloc((info_block_size + 1) * sizeof(char));
     fread(info_block, 1, info_block_size, arc);
 
     info_block[info_block_size] = '\0';
@@ -221,7 +220,7 @@ void list(char* arc_name){
     int info_block_size;
     fread(&info_block_size, 4, 1, arc);
 
-    char *info_block = calloc(info_block_size + 1, sizeof(char));
+    char *info_block = malloc((info_block_size + 1) * sizeof(char));
     fread(info_block, 1, info_block_size, arc);
 
     info_block[info_block_size] = '\0';
@@ -251,7 +250,6 @@ void list(char* arc_name){
         free(file_size);
         free(file_name);
     }
-
 }
 
 int main(int argc, char **argv) {
@@ -259,8 +257,8 @@ int main(int argc, char **argv) {
         printf("\nERROR:\tInvalid number of arguments\n\n");
         exit(-1);
     } else {
-        char* arc_name = calloc(MAX_FILE_NAME, sizeof(char));
-        char** files = calloc(argc, sizeof(char*));
+        char* arc_name = malloc(MAX_FILE_NAME * sizeof(char));
+        char** files = malloc(argc * sizeof(char*));
         int file_number = 0;
 
         printf("\n\t############# ARCHIVE MAKER #############\n\n");

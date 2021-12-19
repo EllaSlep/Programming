@@ -25,12 +25,79 @@ typedef struct image
     int header_size;
 } image;
 
-image bmp_to_image(FILE *f, int *_width, int *_height)
+void matrix_to_data(int n, int m, uint8_t **matrix, uint8_t *data)
+{
+    int current_position = 0;
+    uint8_t current_byte = 0;
+
+    for (int i = n; i >= 1; i--)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            uint8_t mask = 0x80 >> (j - 1) % 8;
+            if (matrix[i][j] == '0')
+                current_byte = current_byte | mask;
+
+            if ((j % 8) == 0 || j == m)
+            {
+                data[current_position] = current_byte;
+                current_position++;
+                current_byte = 0;
+                mask = 0x80;
+            }
+        }
+        while ((current_position) % 4 != 0)
+            current_position++;
+    }
+}
+
+int count_neigbours(int count, uint8_t **current, int x, int y)
+{
+    for (int k = -1; k <= 1; k++)
+    {
+        for (int p = -1; p <= 1; p++)
+        {
+            if (current[x + k][y + p] == '1')
+                count++;
+        }
+    }
+    return count;
+}
+
+uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target)
+{
+    for (int i = 1; i < n + 1; i++)
+    {
+        for (int j = 1; j < m + 1; j++)
+        {
+            if (current[i][j] == '0')
+            { //если эта клетка не живая
+                int count = count_neigbours(0, current, i, j);
+                if (count == 3)
+                    target[i][j] = '1';
+                else
+                    target[i][j] = '0';
+            }
+            else if (current[i][j] == '1')
+            { //если клетка уже была живая
+                int count = count_neigbours(-1, current, i, j);
+                if (count == 2 && count == 3)
+                    target[i][j] = '1';
+                else
+                    target[i][j] = '0';
+            }
+        }
+    }
+    print_debug("\n");
+    return target;
+}
+
+image bmp_to_image(FILE *file, int *_width, int *_height)
 {
     image rez;
     uint8_t *header = malloc(HEADER_SIZE * sizeof(uint8_t));
-    rez.header_size = HEADER_SIZE; // Заголовок BMP составляет 54 байта + 8 байтов палитры
-    fread(header, 1, HEADER_SIZE, f);
+    rez.header_size = HEADER_SIZE; 
+    fread(header, 1, HEADER_SIZE, file);
 
     uint32_t offset = header[10] + (((uint8_t)header[11]) << 8) + (((uint8_t)header[12]) << 16) + (((uint8_t)header[13]) << 24); // offset-смещение байт
 
@@ -40,21 +107,20 @@ image bmp_to_image(FILE *f, int *_width, int *_height)
     {
         free(header);
         header = malloc(offset * sizeof(uint8_t));
-        fseek(f, 0, SEEK_SET);
-        fread(header, 1, offset, f);
+        fseek(file, 0, SEEK_SET);
+        fread(header, 1, offset, file);
         rez.header_size = (int)offset;
     }
     print_debug("offset = %d\n", offset);
 
-    // колличество байт должно быть кратно 4
     int lineSize = (width / 32) * 4 + (width % 32 != 0 ? 4 : 0);
     int file_size = lineSize * height;
 
     uint8_t *img = malloc(width * height);
     uint8_t *data = malloc(file_size);
 
-    fseek(f, (long)offset, SEEK_SET);
-    fread(data, 1, file_size, f);
+    fseek(file, (long)offset, SEEK_SET);
+    fread(data, 1, file_size, file);
 
     print_debug("width = %d; height = %d; bytes in line: %d; total size: %d \n", width, height, lineSize, file_size);
 
@@ -80,88 +146,6 @@ image bmp_to_image(FILE *f, int *_width, int *_height)
     rez.data = data;
     rez.file_size = file_size;
     return rez;
-}
-
-void matrix_to_data(int n, int m, uint8_t **matrix, uint8_t *data)
-{
-    int current_position = 0;
-    uint8_t current_byte = 0;
-
-    for (int i = n; i >= 1; i--)
-    {
-        for (int j = 1; j <= m; j++)
-        {
-
-            uint8_t mask = 0x80 >> (j - 1) % 8;
-            if (matrix[i][j] == '0')
-            {
-                current_byte = current_byte | mask;
-            }
-
-            if ((j % 8) == 0 || j == m)
-            {
-                data[current_position] = current_byte;
-                current_position++;
-                current_byte = 0;
-                mask = 0x80;
-            }
-        }
-        while ((current_position) % 4 != 0)
-        {
-            current_position++;
-        }
-    }
-}
-
-int count_neigbours(int count, uint8_t **current, int x, int y)
-{
-    for (int k = -1; k <= 1; k++)
-    {
-        for (int p = -1; p <= 1; p++)
-        {
-            if (current[x + k][y + p] == '1')
-            {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
-uint8_t **life_generation(int n, int m, uint8_t **current, uint8_t **target)
-{
-    for (int i = 1; i < n + 1; i++)
-    {
-        for (int j = 1; j < m + 1; j++)
-        {
-            if (current[i][j] == '0')
-            { //если эта клетка не живая
-                int count = count_neigbours(0, current, i, j);
-                if (count == 3)
-                { //если у нас 3 живых соседа
-                    target[i][j] = '1';
-                }
-                else
-                { //иначе клетка умирает
-                    target[i][j] = '0';
-                }
-            }
-            else if (current[i][j] == '1')
-            { //если клетка уже была живая
-                int count = count_neigbours(-1, current, i, j);
-                if (count == 2 && count == 3)
-                { //если 2-3 живых соседа, клетка продолжает жить
-                    target[i][j] = '1';
-                }
-                else
-                { //иначе умирает
-                    target[i][j] = '0';
-                }
-            }
-        }
-    }
-    print_debug("\n");
-    return target;
 }
 
 void check_argv(int argc, char *argv[], char *file_name, char *directory_name, uint64_t max_generation, uint32_t step)
@@ -219,9 +203,7 @@ uint8_t **new_arr(int n, int m)
 {
     uint8_t **matrix = (uint8_t **)malloc((n + 2) * sizeof(uint8_t *));
     for (int i = 0; i < n + 2; i++)
-    {
         matrix[i] = (uint8_t *)malloc((m + 2) * sizeof(uint8_t));
-    }
     return matrix;
 }
 
@@ -259,7 +241,6 @@ void init_second_arr(int height, int width, uint8_t *img, uint8_t **matrix, uint
 
 int main(int argc, char *argv[])
 {
-
     char *file_name;
     char *directory_name;
     uint64_t max_generation = (uint64_t)INFINITY;
@@ -278,7 +259,7 @@ int main(int argc, char *argv[])
     if (in == NULL)
     {
         printf("can't open file %s\n", file_name);
-        return 1;
+        exit(-1);
     }
 
     int width, height;
@@ -291,10 +272,6 @@ int main(int argc, char *argv[])
     int n = height;
     int m = width;
 
-    //объявляем 2 двумерных массива- они в начале одинаковы(это наша картинка). берём 1 массив и проводим 1 итерацию игры(образуем 2е поколение)->
-    //  ->записываем во второй массив. Теперь берём второй массив и делаем итерацию с ним в игре -> pзаписываем в первый массив
-    //  В итоге получается некий шаг(т.е один массив хранит текущее значение картинки, а другой предыдущее
-    // В тот в котором хранится предыдущее мы записываем новый шаг(новое значение картинки) и он становится текущим
     uint8_t **matrix = new_arr(n, m);
     uint8_t **arr = new_arr(n, m);
 
@@ -309,13 +286,13 @@ int main(int argc, char *argv[])
     {
         if (iter % 2 == 0)
         {
-            life_generation(n, m, arr, matrix); //игру на 1 поколение и записываем его в файл если это поколение нужной частоты
-            current_matrix = matrix;            //новый массив который запишем в новый файл
+            life_generation(n, m, arr, matrix); 
+            current_matrix = matrix;            
         }
         else
         {
             life_generation(n, m, matrix, arr);
-            current_matrix = arr; //новый массив который запишем в новый файл
+            current_matrix = arr; 
         }
         step_counter++;
         if (step_counter == step)
@@ -335,7 +312,7 @@ int main(int argc, char *argv[])
             if (out == NULL)
             {
                 printf("can't open file %s\n", file_path);
-                return 1;
+                exit(-1);
             }
             matrix_to_data(n, m, current_matrix, data);
             fwrite(bmp_header, sizeof(uint8_t), BMP.header_size, out);

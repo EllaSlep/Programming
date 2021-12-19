@@ -42,9 +42,7 @@ uint1024_t from_uint(unsigned int x)
 
 uint1024_t add_op(uint1024_t x, uint1024_t y)
 {
-    int more = 0;
-    int i;
-    int rezSize;
+    int more = 0, i, rezSize;
 
     if (x.size > y.size)
     {
@@ -56,9 +54,9 @@ uint1024_t add_op(uint1024_t x, uint1024_t y)
     }
     uint1024_t rez;
     rez.size = rezSize;
-    rez.number = calloc(rez.size, sizeof(uint32_t));
+    rez.number = malloc(rez.size * sizeof(uint32_t));
 
-    for (i = 0; i < rezSize or more; i++)
+    for (i = 0; i < rezSize || more; i++)
     {
         if (i == rezSize)
         {
@@ -78,9 +76,7 @@ uint1024_t add_op(uint1024_t x, uint1024_t y)
 
 uint1024_t subtr_op(uint1024_t x, uint1024_t y)
 {
-    int more = 0;
-    int i;
-    int rezSize;
+    int more = 0, i, rezSize;
     if (x.size > y.size)
     {
         rezSize = x.size;
@@ -91,8 +87,8 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
     }
     uint1024_t rez;
     rez.size = rezSize;
-    rez.number = calloc(rez.size, sizeof(uint32_t));
-    for (i = 0; i < rezSize or more; ++i)
+    rez.number = malloc(rez.size * sizeof(uint32_t));
+    for (i = 0; i < rezSize || more; ++i)
     {
         if (x.number[i] < (i < y.size ? y.number[i] : 0) + more)
         {
@@ -105,7 +101,7 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
             more = 0;
         }
     }
-    while (rez.number[rez.size - 1] == 0 and rez.size > 1)
+    while (rez.number[rez.size - 1] == 0 && rez.size > 1)
     {
         rez.size--;
     }
@@ -115,20 +111,19 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y)
 
 uint1024_t mult_op(uint1024_t x, uint1024_t y)
 {
-    int rezSize = x.size + y.size;
-    int i, j, more;
+    int rezSize = x.size + y.size, i, j, more;
     uint1024_t rez;
     rez.size = rezSize;
     rez.number = calloc(rez.size, sizeof(uint32_t));
 
     for (i = 0; i < x.size; ++i)
-        for (j = 0, more = 0; j < y.size or more; ++j)
+        for (j = 0, more = 0; j < y.size || more; ++j)
         {
             long long cur = rez.number[i + j] + x.number[i] * (long long)(j < y.size ? y.number[j] : 0) + more;
             rez.number[i + j] = (uint32_t)(cur % (1000 * 1000 * 1000));
             more = (int)(cur / (1000 * 1000 * 1000));
         }
-    while (rez.number[rez.size - 1] == 0 and rez.size > 1)
+    while (rez.number[rez.size - 1] == 0 && rez.size > 1)
     {
         rez.size--;
     }
@@ -171,7 +166,7 @@ void scanf_value(uint1024_t *x)
 
 void printf_value(uint1024_t x)
 {
-    if (x.number[x.size - 1] == 0 and x.size == 1)
+    if (x.number[x.size - 1] == 0 && x.size == 1)
     {
         printf("0\n");
     }
@@ -198,16 +193,13 @@ int main(int argc, char *argv[])
     scanf_value(&x6);
     scanf("%d", &i);
 
-    printf("Test1\n");
+    printf("\nTest1\n");
     printf_value(add_op(x1, x2));
-    printf("\n");
-    printf("Test2\n");
+    printf("\nTest2\n");
     printf_value(subtr_op(x2, x3));
-    printf("\n");
-    printf("Test3\n");
+    printf("\nTest3\n");
     printf_value(mult_op(x4, x5));
-    printf("\n");
-    printf("Test4\n");
+    printf("\nTest4\n");
     printf_value(add_op(x6, from_uint(i)));
     printf("\n");
 }

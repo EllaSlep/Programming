@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 
 const int header_bytes = 10;
 const int frame_bytes = 11;
@@ -34,22 +33,6 @@ int btoi(char bytes[4], int header_or_not)
     return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
 }
 
-void itob(int value, char *bytes, int header_or_not)
-{
-    int bits = 127;
-    if (header.version[0] == 4 || header_or_not)
-    {
-        bytes[3] = (char)(value & bits);
-        bytes[2] = (char)((value >> 7) & bits);
-        bytes[1] = (char)((value >> 14) & bits);
-        bytes[0] = (char)((value >> 21) & bits);
-    }
-    bytes[3] = (char)(value & bits);
-    bytes[2] = (char)((value >> 8) & bits);
-    bytes[1] = (char)((value >> 16) & bits);
-    bytes[0] = (char)((value >> 24) & bits);
-}
-
 void show(char *file_path)
 {
     FILE *in;
@@ -71,7 +54,7 @@ void show(char *file_path)
         frame_consict = (char *)malloc(frame_size);
         fgets(frame_consict, frame_size, in);
 
-        printf("pos: %5ld | id: %5s | size: %5d | value: ", ftell(in), frame.name, frame_size);
+        printf("pos: %5ld | frame id: %5s | size: %5d | value: ", ftell(in), frame.name, frame_size);
         if (frame.unicode)
         {
             printf("%s\n", frame_consict + 2);
@@ -132,6 +115,22 @@ int get(char *file_path, char *command)
     return pos;
 }
 
+void itob(int value, char *bytes, int header_or_not)
+{
+    int bits = 127;
+    if (header.version[0] == 4 || header_or_not)
+    {
+        bytes[3] = (char)(value & bits);
+        bytes[2] = (char)((value >> 7) & bits);
+        bytes[1] = (char)((value >> 14) & bits);
+        bytes[0] = (char)((value >> 21) & bits);
+    }
+    bytes[3] = (char)(value & bits);
+    bytes[2] = (char)((value >> 8) & bits);
+    bytes[1] = (char)((value >> 16) & bits);
+    bytes[0] = (char)((value >> 24) & bits);
+}
+
 void set(char *file_path, char *command, char *value)
 {
     FILE *in, *out;
@@ -144,7 +143,7 @@ void set(char *file_path, char *command, char *value)
 
     int pos = get(file_path, command);
     fread(&header, 1, header_bytes, in);
-    buf = calloc(pos - 10, 1);
+    buf = malloc(pos - 10 * 1);
     fread(buf, 1, pos - 10, in);
     fread(&frame_now, 1, frame_bytes, in);
     frame_size = btoi(frame_now.size, 0);
@@ -179,6 +178,7 @@ void set(char *file_path, char *command, char *value)
 
     fclose(in);
     fclose(out);
+    remove("/Users/macbook/Desktop/temp.txt");
 }
 
 int main(int argc, char *argv[])
