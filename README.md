@@ -6,14 +6,34 @@
 - _1 course 1 semester:_
     Номер | Ссылка на код | Текст задачи
     :------- |:----------------:| -----------------:
-    1 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
-    2 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/WordCont.c) | [Текст задания](#WordCont) <a id="up2"></a>
+    1 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/WordCont.c) | [Текст задания](#WordCont) <a id="up2"></a>
+    2 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
     3 lab | [Анализ файла](https://github.com/EllaSlep/Programming/blob/main/analiz2.c) | [Текст задания](#Analiz) <a id="up3"></a>
     4 lab | [Чтение mp3](https://github.com/EllaSlep/Programming/blob/main/mp3_reader2.c) | [Текст задания](#mp3_reader) <a id="up4"></a> [^файл_музыка]
     5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/Life.c) | [Текст задания](#Life) <a id="up5"></a> [^файл_игра]
     6 lab | [Архиватор](https://github.com/EllaSlep/Programming/blob/main/arc.c) | [Текст задания](#arc) <a id="up6"></a>
 
 Для работы с лабараторными есть файлы: [3](https://github.com/EllaSlep/Programming/blob/main/2-08%20o%20no%20no%20no%20(not%20clip).mp3), [5](https://github.com/EllaSlep/Programming/blob/main/Pulsar.bmp).
+
+***
+<a id="WordCont"></a>
+###Лабораторная работа. Утилита WordCount
+
+#####Задача.
+Реализовать утилиту WordCount подсчитывающую количество строк, слов и байт для указанного файла и выводить эту информацию в поток вывода.
+
+Программа должна поддерживать следующие опции:
+1. -l, --lines вывод только количества строк
+2. -c, --bytes вывод размера файла в байтах
+3. -w, --words вывод количества слов
+
+Название файла и опции передаются через аргументы командной строки в следующем формате: WordCont.exe [OPTION] filename
+
+#####Примечание.
+>1. Для реализации утилиты потребуется воспользоваться стандартной библиотекой вводы\вывода [описание](https://en.cppreference.com/w/c/io).
+>2. Пример того, как можно организовать парсинг аргументов командной строки, можно посмотреть [здесь](https://www.cplusplus.com/articles/DEN36Up4/).
+
+[Вернуться](#up2)
 
 ***
 <a id="uint1024_t"></a>
@@ -36,27 +56,6 @@
 >3. Реализовать программу демонстрирующую работоспособность вышеуказанных функций
 
 [Вернуться](#up1)
-
-***
-
-<a id="WordCont"></a>
-###Лабораторная работа. Утилита WordCount
-
-#####Задача.
-Реализовать утилиту WordCount подсчитывающую количество строк, слов и байт для указанного файла и выводить эту информацию в поток вывода.
-
-Программа должна поддерживать следующие опции:
-1. -l, --lines вывод только количества строк
-2. -c, --bytes вывод размера файла в байтах
-3. -w, --words вывод количества слов
-
-Название файла и опции передаются через аргументы командной строки в следующем формате: WordCont.exe [OPTION] filename
-
-#####Примечание.
->1. Для реализации утилиты потребуется воспользоваться стандартной библиотекой вводы\вывода [описание](https://en.cppreference.com/w/c/io).
->2. Пример того, как можно организовать парсинг аргументов командной строки, можно посмотреть [здесь](https://www.cplusplus.com/articles/DEN36Up4/).
-
-[Вернуться](#up2)
 
 ***
 
