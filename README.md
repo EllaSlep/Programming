@@ -6,8 +6,8 @@
 - _1 course 1 semester:_
     Номер | Ссылка на код | Текст задачи
     :------- |:----------------:| -----------------:
-    1 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/WordCont.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
-    2 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#WordCont) <a id="up2"></a>
+    1 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
+    2 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/WordCont.c) | [Текст задания](#WordCont) <a id="up2"></a>
     3 lab | [Анализ файла](https://github.com/EllaSlep/Programming/blob/main/analiz2.c) | [Текст задания](#Analiz) <a id="up3"></a>
     4 lab | [Чтение mp3](https://github.com/EllaSlep/Programming/blob/main/mp3_reader2.c) | [Текст задания](#mp3_reader) <a id="up4"></a> [^файл_музыка]
     5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/Life.c) | [Текст задания](#Life) <a id="up5"></a> [^файл_игра]
