@@ -99,14 +99,12 @@ void get_info(char **files, int file_number) {
         fclose(current_file);
         
         char *current_file_name =malloc(strlen(files[i]) * sizeof(char)); 
-        if (strrchr(files[i], '\\') == NULL) {
-            //current_file_name = malloc(strlen(files[i]) * sizeof(char));
+        if (strrchr(files[i], '/') == NULL) {
             strcpy(current_file_name, files[i]);
         } else {
-            //char *current_file_name = malloc(strlen(files[i]) * sizeof(char));
-            strcpy(current_file_name, strrchr(files[i], '\\'));
+            strcpy(current_file_name, strrchr(files[i], '/') + 1);
         }
-        
+
         fputs(current_file_name, info);
         fwrite("||", 1, 2, info);
     }
@@ -171,24 +169,24 @@ void extract(char* arc_name){
 
     info_block[info_block_size] = '\0';
 
-    int token_count = 0;
-    node *tokens; 
-    char *tok = strtok(info_block, "||");
-    while(tok){
-        if(strlen(tok) == 0)
+    int info_contains_2xfiles = 0;
+    node *queue_parts_from_info; 
+    char *info_part = strtok(info_block, "||");
+    while(info_part){
+        if(strlen(info_part) == 0)
             break;
-        push(&tokens, tok);
-        tok = strtok(NULL, "||");
-        ++token_count;
+        push(&queue_parts_from_info, info_part);
+        info_part = strtok(NULL, "||");
+        ++info_contains_2xfiles;
     }
     free(info_block);
-    int file_number = token_count / 2;
+    int file_number = info_contains_2xfiles / 2;
 
     char byte;
 
     for (int i = 0; i < file_number; i++){
-        char* file_size = pop_back(&tokens);
-        char* file_name = pop_back(&tokens);
+        char* file_size = pop_back(&queue_parts_from_info);
+        char* file_name = pop_back(&queue_parts_from_info);
         FILE *current_file = fopen(file_name, "wb");
         if (current_file == NULL){
             printf("\t\tCAN'T OPEN THE FILE: %s\n", file_name);
@@ -225,25 +223,25 @@ void list(char* arc_name){
 
     info_block[info_block_size] = '\0';
 
-    int token_count = 0;
-    node *tokens;
-    char *tok = strtok(info_block, "||");
-    while(tok){
-        if(strlen(tok) == 0)
+    int info_contains_2xfiles = 0;
+    node *queue_parts_from_info;
+    char *info_part = strtok(info_block, "||");
+    while(info_part){
+        if(strlen(info_part) == 0)
             break;
-        push(&tokens, tok);
-        tok = strtok(NULL, "||");
-        ++token_count;
+        push(&queue_parts_from_info, info_part);
+        info_part = strtok(NULL, "||");
+        ++info_contains_2xfiles;
     }
     free(info_block);
 
-    int file_number = token_count / 2;
+    int file_number = info_contains_2xfiles / 2;
 
     printf("\n\t\tThere are %d files in %s:\n", file_number, arc_name);
 
     for (int i = 0; i < file_number; i++){
-        char* file_size = pop_back(&tokens);
-        char* file_name = pop_back(&tokens);
+        char* file_size = pop_back(&queue_parts_from_info);
+        char* file_name = pop_back(&queue_parts_from_info);
 
         printf("\t\t•\t%s\n", file_name);
 
@@ -261,7 +259,7 @@ int main(int argc, char **argv) {
         char** files = malloc(argc * sizeof(char*));
         int file_number = 0;
 
-        printf("\n\t############# ARCHIVE MAKER #############\n\n");
+        printf("\n\t############# ARCHIVE MAKER #############\n");
         for (int i = 1; i < argc; i++){
             if (!strcmp("--file", argv[i])){
                 arc_name = argv[i+1];
