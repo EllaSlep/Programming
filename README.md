@@ -6,14 +6,14 @@
 - _1 course 1 semester:_
     Номер | Ссылка на код | Текст задачи
     :------- |:----------------:| -----------------:
-    1 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/WordCont.c) | [Текст задания](#WordCont) <a id="up2"></a>
-    2 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/uint1024_t.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
-    3 lab | [Анализ файла](https://github.com/EllaSlep/Programming/blob/main/analiz2.c) | [Текст задания](#Analiz) <a id="up3"></a>
-    4 lab | [Чтение mp3](https://github.com/EllaSlep/Programming/blob/main/mp3_reader2.c) | [Текст задания](#mp3_reader) <a id="up4"></a> [^файл_музыка]
-    5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/Life.c) | [Текст задания](#Life) <a id="up5"></a> [^файл_игра]
-    6 lab | [Архиватор](https://github.com/EllaSlep/Programming/blob/main/arc.c) | [Текст задания](#arc) <a id="up6"></a>
+    1 lab | [Функция Word Cont](https://github.com/EllaSlep/Programming/blob/main/C/WordCont.c) | [Текст задания](#WordCont) <a id="up2"></a>
+    2 lab | [Тип данных uint1024_t](https://github.com/EllaSlep/Programming/blob/main/C/uint1024_t.c) | [Текст задания](#uint1024_t) <a id="up1"></a>
+    3 lab | [Анализ файла](https://github.com/EllaSlep/Programming/blob/main/C/analiz2.c) | [Текст задания](#Analiz) <a id="up3"></a>
+    4 lab | [Чтение mp3](https://github.com/EllaSlep/Programming/blob/main/C/mp3_reader2.c) | [Текст задания](#mp3_reader) <a id="up4"></a> [^файл_музыка]
+    5 lab | [Игра "Жизнь"](https://github.com/EllaSlep/Programming/blob/main/C/Life.c) | [Текст задания](#Life) <a id="up5"></a> [^файл_игра]
+    6 lab | [Архиватор](https://github.com/EllaSlep/Programming/blob/main/C/arc.c) | [Текст задания](#arc) <a id="up6"></a>
 
-Для работы с лабараторными есть файлы: [3](https://github.com/EllaSlep/Programming/blob/main/2-08%20o%20no%20no%20no%20(not%20clip).mp3), [5](https://github.com/EllaSlep/Programming/blob/main/Pulsar.bmp).
+Для работы с лабараторными есть файлы: [3](https://github.com/EllaSlep/Programming/blob/main/C/files/2-08%20o%20no%20no%20no%20(not%20clip).mp3), [5](https://github.com/EllaSlep/Programming/blob/main/C/files/Pulsar.bmp).
 
 ***
 <a id="WordCont"></a>
@@ -110,7 +110,7 @@ ___\$bytes_send___ - количество переданных в ответе �
 
 [Вернуться](#up4)
 
-[^файл_музыка]: Можете взять [файл mp3](https://github.com/EllaSlep/Programming/blob/main/2-08%20o%20no%20no%20no%20(not%20clip).mp3)
+[^файл_музыка]: Можете взять [файл mp3](https://github.com/EllaSlep/Programming/blob/main/C/files/2-08%20o%20no%20no%20no%20(not%20clip).mp3)
 
 ***
 
@@ -130,7 +130,7 @@ ___\$bytes_send___ - количество переданных в ответе �
 
 [Вернуться](#up5)
 
-[^файл_игра]:Можете взять [файл bmp](https://github.com/EllaSlep/Programming/blob/main/Pulsar.bmp)
+[^файл_игра]:Можете взять [файл bmp](https://github.com/EllaSlep/Programming/blob/main/C/files/Pulsar.bmp)
 
 ***
 
