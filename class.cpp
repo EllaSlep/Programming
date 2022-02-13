@@ -80,17 +80,20 @@ class closed_polyline{
             broken_line.push_back(va_arg(vl, dot));
         }
         va_end(vl);
-        broken_line.push_back(broken_line.front());
+        broken_line.resize(broken_line.size() + 1, broken_line.front()); //broken_line.push_back(broken_line.front());
     }
 
     //конструктор копирования
     closed_polyline(const polyline& polyline_a){
-        broken_line.push_back(polyline_a.broken_line.front());
+        for (int i = 0; i < polyline_a.broken_line.size(); i++){
+            broken_line.push_back(polyline_a.broken_line[i]);
+        }
+        broken_line.resize(broken_line.size() + 1, broken_line.front());
     }
     
     closed_polyline(const closed_polyline& polyline_b){
         for (int i = 0; i < polyline_b.broken_line.size(); i++){
-            broken_line[i] = polyline_b.broken_line[i];
+            broken_line.push_back(polyline_b.broken_line[i]);
         }
     }
     //оператор присваивания
@@ -100,6 +103,7 @@ class closed_polyline{
         }
         return *this;
     }
+    // длина
     double length_polyline(){
         double rez = 0.0;
         for (int i = 0; i < broken_line.size() - 1; i++){
@@ -117,10 +121,10 @@ int main(){
     point B(x, y);
     std :: cin >> x >> y;
     point C(x, y);
-    std :: cout << "A (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\n" << "B (" << B.dot_.x_ << ";" << B.dot_.y_ << ")\n" << "C (" << C.dot_.x_ << ";" << C.dot_.y_ << ")" << std :: endl;
+    std :: cout << "\npoints:\n" << "A (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\n" << "B (" << B.dot_.x_ << ";" << B.dot_.y_ << ")\n" << "C (" << C.dot_.x_ << ";" << C.dot_.y_ << ")" << std :: endl;
     polyline line(3, A.dot_, B.dot_, C.dot_);
 
-    //std :: cout << line.length_polyline() << std :: endl;
+    std :: cout << "\nline length: " << line.length_polyline() << std :: endl;
 
     /* point D(A);
     std :: cout << "\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\n" << "D (" << D.dot_.x_ << ";" << D.dot_.y_ << ")\n" << std :: endl;
@@ -130,7 +134,8 @@ int main(){
     std :: cout << "\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\n" << "F (" << F.dot_.x_ << ";" << F.dot_.y_ << ")\n" << std :: endl; */
     
     closed_polyline closed_line(line);
-    dot D = closed_line.broken_line.back();
-    std :: cout << "D (" << D.x_ << ";" << D.y_ << ")\n" << std :: endl;
-    std :: cout << closed_line.length_polyline() << std :: endl;
+    std :: cout << "\nclosed line lenght: "<< closed_line.length_polyline() << std :: endl;
+
+    /* closed_polyline closed_line2(3, A.dot_, B.dot_, C.dot_);
+    std :: cout << closed_line2.length_polyline() << std :: endl; */
 }
