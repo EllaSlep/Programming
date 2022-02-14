@@ -16,7 +16,7 @@
 - _1 course 2 semester:_
     Номер | Ссылка на код | Текст задачи
     :------- |:----------------:| ---------------:
-    1 lab| [ООП. Классы.](https://github.com/EllaSlep/Programming/blob/main/class.cpp) | [Текст задания](#Class) <a id="up7"></a>
+    1 lab| [ООП. Классы.](https://github.com/EllaSlep/Programming/tree/main/C%2B%2B/Classes) | [Текст задания](#Class) <a id="up7"></a>
 
 ***
 <a id="WordCont"></a>
