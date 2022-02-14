@@ -72,6 +72,9 @@ class polyline{
         }
         return *this;
     }
+    void add_point(const dot& A){
+        broken_line.resize(broken_line.size() + 1, A);
+    }
     //длина
     double length_polyline(){
         double rez = 0.0;
@@ -119,6 +122,9 @@ class closed_polyline{
         }
         return *this;
     }
+    void add_point(const dot& A){
+        broken_line.resize(broken_line.size() + 1, A);
+    }
     // длина
     double length_polyline(){
         double rez = 0.0;
@@ -134,6 +140,7 @@ class closed_polyline{
 
 class polygon : public closed_polyline{
     public:
+    //конструктор
     polygon(const closed_polyline& closed_polyline_a) : closed_polyline(closed_polyline_a) 
     {}
     //оператор присваивания
@@ -156,35 +163,97 @@ class polygon : public closed_polyline{
     {}
 };
 
+class triangle : public polygon{
+    public:
+    //конструктор
+    triangle(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
+    {}
+    //оператор присваивания
+    triangle& operator= (const triangle& ABC){
+        for (int i = 0; i < 3; i++){
+            this->broken_line[i] = ABC.broken_line[i];
+        }
+        return *this;
+    }
+    //деструктор
+    ~triangle()
+    {}
+};
+
+class trapezoid : public polygon{
+    public:
+    //конструктор
+    trapezoid(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
+    {}
+    //оператор присваивания
+    trapezoid& operator= (const trapezoid& ABCD){
+        for (int i = 0; i < 4; i++){
+            this->broken_line[i] = ABCD.broken_line[i];
+        }
+        return *this;
+    }
+    //деструктор
+    ~trapezoid()
+    {}
+};
+
+class regular_polygon : public polygon{
+    public:
+    //конструктор
+    regular_polygon(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
+    {}
+    //оператор присваивания
+    regular_polygon& operator= (const regular_polygon& ABCD){
+        for (int i = 0; i < 4; i++){
+            this->broken_line[i] = ABCD.broken_line[i];
+        }
+        return *this;
+    }
+    //деструктор
+    ~regular_polygon()
+    {}
+};
+
 int main(){
-    int x, y;
-    std :: cin >> x >> y;
-    point A(x, y);
-    std :: cin >> x >> y;
-    point B(x, y);
-    std :: cin >> x >> y;
-    point C(x, y);
-    std :: cin >> x >> y;
-    point D(x, y);
-    std :: cout << "\npoints:\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\nB (" << B.dot_.x_ << ";" << B.dot_.y_ << ")\nC (" << C.dot_.x_ << ";" << C.dot_.y_ <<  ")\nD (" << D.dot_.x_ << ";" << D.dot_.y_ << ")" << std :: endl;
+    point A(2, 1);
+    point B(3, 2);
+    point C(4, 3);
+    point D(4, 1);
+    std :: cout << "\nPOINTS:\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\nB (" << B.dot_.x_ << ";" << B.dot_.y_ << ")\nC (" << C.dot_.x_ << ";" << C.dot_.y_ <<  ")\nD (" << D.dot_.x_ << ";" << D.dot_.y_ << ")" << std :: endl;
     
     polyline line(4, A.dot_, B.dot_, C.dot_, D.dot_);
-    std :: cout << "\nline length: " << line.length_polyline() << std :: endl;
+    std :: cout << "\nLINES\nline length: " << line.length_polyline() << std :: endl;
 
-    /* point D(A);
-    std :: cout << "\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\n" << "D (" << D.dot_.x_ << ";" << D.dot_.y_ << ")\n" << std :: endl; */
-
-    /* point F;
-    F = A;
-    std :: cout << "\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\nF (" << F.dot_.x_ << ";" << F.dot_.y_ << ")\n" << std :: endl; */
-    
-    /* closed_polyline closed_line(line);
-    std :: cout << "\nclosed line lenght: "<< closed_line.length_polyline() << std :: endl; */
-
-    /* closed_polyline closed_line2(3, A.dot_, B.dot_, C.dot_);
-    std :: cout << closed_line2.length_polyline() << std :: endl; */
+    closed_polyline closed_line(line);
+    std :: cout << "closed line lenght: "<< closed_line.length_polyline() << std :: endl;
 
     polygon ABCD(line);
-    std :: cout << "\nperimeter: " << ABCD.length_polyline() << std :: endl;
-    std :: cout << "\narea: " << ABCD.polygon_area() << std :: endl;
+    std :: cout << "\nPOLYGON\nABCD perimeter: " << ABCD.length_polyline() << std :: endl;
+    std :: cout << "ABCD area: " << ABCD.polygon_area() << std :: endl;
+
+    std :: cout << "\nTRIANGLE\npoints:\nA (" << A.dot_.x_ << ";" << A.dot_.y_ << ")\nC (" << C.dot_.x_ << ";" << C.dot_.y_ <<  ")\nD (" << D.dot_.x_ << ";" << D.dot_.y_ << ")" << std :: endl;
+    closed_polyline line2(3, A.dot_, C.dot_, D.dot_);
+    triangle ACD(line2);
+    std :: cout << "ABC perimeter: " << ACD.length_polyline() << std :: endl;
+    std :: cout << "ABC area: " << ACD.polygon_area() << std :: endl;
+
+    point K(0, 0);
+    point L(0, 2);
+    point M(2, 2);
+    point N(3, 0);
+    std :: cout << "\nTRAPEZIOD\npoints:\nK (" << K.dot_.x_ << ";" << K.dot_.y_ << ")\nL (" << L.dot_.x_ << ";" << L.dot_.y_ << ")\nM (" << M.dot_.x_ << ";" << M.dot_.y_ <<  ")\nN (" << N.dot_.x_ << ";" << N.dot_.y_ << ")" << std :: endl;
+    closed_polyline line3(4, K.dot_, L.dot_, M.dot_, N.dot_);
+    trapezoid KLMN(line3);
+    std :: cout << "KLMN perimeter: " << KLMN.length_polyline() << std :: endl;
+    std :: cout << "KLMN area: " << KLMN.polygon_area() << std :: endl;
+
+    point F(0, 0);
+    point E(0, 2);
+    point G(2, 2);
+    point H(2, 0);
+    std :: cout << "\nSQUARE\npoints:\nF (" << F.dot_.x_ << ";" << F.dot_.y_ << ")\nE (" << E.dot_.x_ << ";" << E.dot_.y_ << ")\nG (" << G.dot_.x_ << ";" << G.dot_.y_ <<  ")\nH (" << H.dot_.x_ << ";" << H.dot_.y_ << ")" << std :: endl;
+    closed_polyline line4(4, F.dot_, E.dot_, G.dot_, H.dot_);
+    regular_polygon FEGH(line4);
+    std :: cout << "FEGH perimeter: " << FEGH.length_polyline() << std :: endl;
+    std :: cout << "FEGH area: " << FEGH.polygon_area() << "\n" << std :: endl;
 }
