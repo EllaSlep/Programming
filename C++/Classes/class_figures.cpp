@@ -167,7 +167,12 @@ class triangle : public polygon{
     public:
     //конструктор
     triangle(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
-    {}
+    {
+        if (closed_polyline_a.broken_line.size() != 4){
+            std :: cout << "It's not a triangle!\n";
+            exit(-2);
+        }
+    }
     //оператор присваивания
     triangle& operator= (const triangle& ABC){
         for (int i = 0; i < 3; i++){
@@ -184,7 +189,23 @@ class trapezoid : public polygon{
     public:
     //конструктор
     trapezoid(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
-    {}
+    {
+        if (closed_polyline_a.broken_line.size() != 5){
+            std :: cout << "It's not a trapezoid!\n";
+            exit(-2);
+        }
+        
+        float k1 = (closed_polyline_a.broken_line[1].y_ - closed_polyline_a.broken_line[0].y_)/(closed_polyline_a.broken_line[1].x_ - closed_polyline_a.broken_line[0].x_);
+        float k2 = (closed_polyline_a.broken_line[2].y_ - closed_polyline_a.broken_line[1].y_)/(closed_polyline_a.broken_line[2].x_ - closed_polyline_a.broken_line[1].x_);
+        float k3 = (closed_polyline_a.broken_line[3].y_ - closed_polyline_a.broken_line[2].y_)/(closed_polyline_a.broken_line[3].x_ - closed_polyline_a.broken_line[2].x_);
+        float k4 = (closed_polyline_a.broken_line[4].y_ - closed_polyline_a.broken_line[3].y_)/(closed_polyline_a.broken_line[4].x_ - closed_polyline_a.broken_line[3].x_);
+        
+        if (k1 != k2 && k1 != k3 && k1 != k4 && k2 != k3 && k2 != k4 && k3 != k4){
+            std :: cout << "It's not a trapezoid!\n";
+            exit(-2);
+        }
+        
+    }
     //оператор присваивания
     trapezoid& operator= (const trapezoid& ABCD){
         for (int i = 0; i < 4; i++){
@@ -201,7 +222,12 @@ class regular_polygon : public polygon{
     public:
     //конструктор
     regular_polygon(const closed_polyline& closed_polyline_a) : polygon(closed_polyline_a)
-    {}
+    {
+        if (closed_polyline_a.broken_line.size() != 5){
+            std :: cout << "It's not a regular polygon!\n";
+            exit(-2);
+        }
+    }
     //оператор присваивания
     regular_polygon& operator= (const regular_polygon& ABCD){
         for (int i = 0; i < 4; i++){
@@ -237,10 +263,10 @@ int main(){
     std :: cout << "ABC perimeter: " << ACD.length_polyline() << std :: endl;
     std :: cout << "ABC area: " << ACD.polygon_area() << std :: endl;
 
-    point K(0, 0);
-    point L(0, 2);
-    point M(2, 2);
-    point N(3, 0);
+    point K(1, 2);
+    point L(3, 6);
+    point M(4, 5);
+    point N(2, 1);
     std :: cout << "\nTRAPEZIOD\npoints:\nK (" << K.dot_.x_ << ";" << K.dot_.y_ << ")\nL (" << L.dot_.x_ << ";" << L.dot_.y_ << ")\nM (" << M.dot_.x_ << ";" << M.dot_.y_ <<  ")\nN (" << N.dot_.x_ << ";" << N.dot_.y_ << ")" << std :: endl;
     closed_polyline line3(4, K.dot_, L.dot_, M.dot_, N.dot_);
     trapezoid KLMN(line3);

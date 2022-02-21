@@ -5,6 +5,29 @@
 
 class polynomial{
     public:
+    std :: string poly[100][2]; //1 - коэфициент, 2 - число, i - степень
+
+    //constructer
+    polynomial(std :: string str = "\0"){
+        str.append("+");
+        int pos1 = 0;
+        while (pos1 != str.length()){
+            if (str[pos1] = "-"){
+                str.insert("+", pos1 - 1, 0, 1); //вставляем  в строку + перед минусом
+            }
+            pos1++;
+        }
+        while (!str.empty())
+        {
+            int degree_start = str.rfind("^", str.length() - 1), degree_finish = str.rfind("+", str.length() - 1);
+            int degree = str.assign(str, degree_start, degree_finish - degree_start, int);
+            str.erase(degree_start - 1, degree_finish - degree_start + 1);
+        }
+        
+    }
+}
+/* class polynomial{
+    public:
     std :: vector <std :: string> data;
     // constructor
     polynomial(std :: string str = "\0"){
@@ -99,7 +122,7 @@ class polynomial{
     }
     //bool
     //
-    /* void with_letters(){
+    void with_letters(){
         for (int i = 0; i < data.size(); i++){
             for (int j = 0; j < data[i].length(); j++){
                 if (data[i][j] >= 'a' && data[i][j] <= 'z'){
@@ -110,7 +133,7 @@ class polynomial{
                 }
             }
         }
-    } */
+    }
     //
     ~polynomial()
     {}
@@ -145,7 +168,7 @@ int main (){
         std :: cout << poly4.data[i] << " ";
     }
     std :: cout << "\n" << std :: endl;
-    /* std :: string str3 = "2a-3b+c";
+    std :: string str3 = "2a-3b+c";
     std :: cout << str3 << std :: endl;
     polynomial poly3(str3);
     for (int i = 0; i < poly3.data.size(); i++){
@@ -161,5 +184,5 @@ int main (){
     for (int i = 0; i < poly3.data.size(); i++){
         std :: cout << poly3.data[i] << " ";
     }
-    std :: cout << "\n" << std :: endl; */
-}
+    std :: cout << "\n" << std :: endl;
+} */
