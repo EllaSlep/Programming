@@ -3,7 +3,140 @@
 #include <string>
 #include <vector>
 
-class polynomial{
+class polynomal{
+    private:
+    std :: vector <float> coef;
+    
+    public:
+    //constructor
+    polynomal(){
+    }
+    //copy constructor
+    polynomal(std :: vector <float> coefficents){
+        for (int i = 0; i < coefficents.size(); ++i){
+            coef.push_back(coefficents[i]);
+        }
+    }
+    //get-set data
+    void set_coef(int i, float coefficent){
+        this->coef[i] = coefficent;
+    }
+    unsigned get_max_degree() const{
+        return coef.size();
+    }
+    float get_coef(int i) const{
+        return coef[i];
+    }
+    //operators
+    polynomal& operator=(const polynomal& poly){
+        if (&poly == this)
+            return *this;
+        this->coef.clear();
+        for (int i = 0; i < poly.get_max_degree(); ++i){
+            this->coef.push_back(poly.get_coef(i));
+        }
+        return *this;
+    }
+    polynomal& operator+=(const polynomal& poly){
+        if (poly.get_max_degree() != 0){
+            if (this->get_max_degree() < poly.get_max_degree()){
+                this->coef.resize(poly.get_max_degree());
+            }
+            for (int i = 0; i < poly.get_max_degree(); ++i){
+                float coef = this->get_coef(i);
+                float new_coef = coef + poly.get_coef(i);
+                this->set_coef(i, new_coef);
+            }
+        }
+        return *this;
+    }
+    polynomal& operator-=(const polynomal& poly){
+        if (poly.get_max_degree() != 0){
+            if (this->get_max_degree() < poly.get_max_degree()){
+                this->coef.resize(poly.get_max_degree());
+            }
+            for (int i = 0; i < poly.get_max_degree(); ++i){
+                std :: cout << "prev: " << this->get_coef(i) << " - " << poly.get_coef(i) << "\t";
+                float new_coef = this->get_coef(i) - poly.get_coef(i);
+                this->set_coef(i, new_coef);
+                std :: cout << "new_coef: " << new_coef << " in vector: " << this->get_coef(i) << std :: endl;
+            }
+        }
+        return *this;
+    }
+    const polynomal& operator+(const polynomal& poly1){
+        polynomal rez;
+        
+
+    }
+
+    ~polynomal(){
+        coef.clear();
+    }
+};
+
+std :: istream& operator>> (std :: istream& stream, polynomal& poly){
+    std :: vector <float> coefficents;
+    char number_string[10];
+    stream >> number_string;
+    while (!strcmp(number_string, "\n")){
+        coefficents.push_back(atof(number_string));
+        stream >> number_string;
+    }
+    poly = polynomal(coefficents);
+    return stream;
+}
+
+std :: ostream& operator<< (std :: ostream& stream, const polynomal& poly){
+    if (poly.get_max_degree() != 0){
+        int j = 0;
+        while (poly.get_coef(j) == 0 && j < poly.get_max_degree()){
+            ++j;
+        }
+        if (poly.get_coef(j) != 0){
+            stream << poly.get_coef(j) << "x^" << j;
+        }
+        for (int i = j + 1; i < poly.get_max_degree(); ++i){
+            if (poly.get_coef(i) > 0){
+                stream << "+" << poly.get_coef(i) << "x^" << i;
+            }
+            else if (poly.get_coef(i) < 0){
+                stream << poly.get_coef(i) << "x^" << i;
+            }
+        }
+    }
+    else
+        stream << "0";
+    return stream;
+}
+
+int main(){
+    std :: cout << std :: endl;
+
+    std :: vector <float> coefficents;
+    coefficents.push_back(0);
+    coefficents.push_back(1);
+    coefficents.push_back(-2);
+    coefficents.push_back(3);
+
+    polynomal poly(coefficents);
+    polynomal poly2;
+
+    std :: cout << "poly: \t\t" << poly << std :: endl;
+    std :: cout << "poly2: \t\t"<< poly2 << std :: endl;
+    poly2 = poly;
+    std :: cout << "new poly2: \t" << poly2 << std :: endl;
+
+    poly2 += poly;
+    std :: cout << "poly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
+
+    polynomal poly3;
+    poly3 += poly;
+    poly3 -= poly;
+    std :: cout << "poly3: \t\t" << poly3 << std :: endl;
+    std :: cout << "\nDONE" << std :: endl;
+}
+/* class polynomial{
     public:
     std :: string poly[100][2]; //1 - коэфициент, 2 - число, i - степень
 
@@ -11,21 +144,82 @@ class polynomial{
     polynomial(std :: string str = "\0"){
         str.append("+");
         int pos1 = 0;
-        while (pos1 != str.length()){
-            if (str[pos1] = "-"){
-                str.insert("+", pos1 - 1, 0, 1); //вставляем  в строку + перед минусом
+        while (pos1 < str.size()){
+            if ((str.compare(pos1, 1, "-") == 0)){
+                str.insert(pos1, "+", 0, 1); //вставляем  в строку + перед минусом
+                ++pos1;
             }
-            pos1++;
+            ++pos1;
         }
+        std :: cout << str << std :: endl;
+        
         while (!str.empty())
         {
-            int degree_start = str.rfind("^", str.length() - 1), degree_finish = str.rfind("+", str.length() - 1);
-            int degree = str.assign(str, degree_start, degree_finish - degree_start, int);
+            int degree_start = str.find("^", str.size());
+            int plus_pos = str.find("+", str.size());
+            if (degree_start == std :: string :: npos){
+                degree_start = str.size() + 1;
+            }
+            if (plus_pos == std :: string :: npos){
+                plus_pos = str.size() + 1;
+            }
+
+            if (plus_pos < degree_start && degree_start != str.size() + 1){ // the number doesn't have the degree
+                char number_string[10];
+                str.copy(number_string, plus_pos, 0);
+                str.erase(0, plus_pos);
+
+                poly[1][0].append(number_string);
+            }
+            else if (plus_pos > degree_start && plus_pos != str.size() + 1){
+                char number_string[10];
+                str.copy(number_string, degree_start, 0);
+                str.erase(0, degree_start + 1);
+
+                char degree_string[10];
+                str.copy(degree_string, plus_pos, 0);
+                str.erase(0, plus_pos);
+
+                int degree_int = atoi(degree_string);
+                poly[degree_int][0].append(number_string);
+            }
+            int degree_start = str.rfind("^", str.length() - 1), degree_finish = str.length() - 1;
+            char degree[10];
+            str.copy(degree, degree_finish - degree_start, degree_start);
+            int degree_int = atoi(degree);
             str.erase(degree_start - 1, degree_finish - degree_start + 1);
+
+            int number_start = str.rfind("+", str.length()), number_finish = str.length() - 1;
+            char number[100];
+            str.copy(number, number_finish - number_start, number_start);
+            poly[degree_int][1] = number;
+            str.erase(number_start, number_finish - number_start);
         }
-        
+        //make poly coef and letter brackement
     }
-}
+}; */
+
+/* std :: ostream& operator<< (std :: ostream& stream, const polynomial& poly){
+    stream << poly.poly[0][0] << poly.poly[0][1];
+    for (int i = 1; i < 100; ++i){
+        if (poly.poly[i][1] != 0){
+            if (poly.poly[i][1] > 0)
+                stream << " + " << poly.poly[i][0] << poly.poly[i][1] << "^" << i;
+            else
+                stream << " " <<  poly.poly[i][0] << poly.poly[i][2] << "^" << i;
+        }
+    }
+} */
+
+/* int main (){
+    std :: string str;
+    std :: cin >> str;
+    polynomial poly(str);
+    for (int i = 0; i < 100; ++i){
+        if (poly.poly[i][0] != "\0")
+            std :: cout << " + " << poly.poly[i][0] << "^" << i;
+    }
+} */
 /* class polynomial{
     public:
     std :: vector <std :: string> data;
