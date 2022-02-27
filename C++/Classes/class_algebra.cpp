@@ -56,18 +56,37 @@ class polynomal{
                 this->coef.resize(poly.get_max_degree());
             }
             for (int i = 0; i < poly.get_max_degree(); ++i){
-                std :: cout << "prev: " << this->get_coef(i) << " - " << poly.get_coef(i) << "\t";
                 float new_coef = this->get_coef(i) - poly.get_coef(i);
                 this->set_coef(i, new_coef);
-                std :: cout << "new_coef: " << new_coef << " in vector: " << this->get_coef(i) << std :: endl;
             }
         }
         return *this;
     }
-    const polynomal& operator+(const polynomal& poly1){
+    const polynomal operator+(const polynomal& poly){
         polynomal rez;
-        
-
+        rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
+        for (int i = 0; i < rez.get_max_degree(); ++i){
+            float new_coef = this->get_coef(i) + poly.get_coef(i);
+            this->set_coef(i, new_coef);
+        }
+        return rez;
+    }
+    const polynomal operator-(const polynomal& poly){
+        polynomal rez;
+        rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
+        for (int i = 0; i < rez.get_max_degree(); ++i){
+            float new_coef = this->get_coef(i) - poly.get_coef(i);
+            this->set_coef(i, new_coef);
+        }
+        return rez;
+    }
+    float operator[] (int i){
+        return this->get_coef(i);
+    }
+    bool operator==(const polynomal& poly){
+        return this->coef == poly.coef;
+    }bool operator!=(const polynomal& poly){
+        return !(this->coef == poly.coef);
     }
 
     ~polynomal(){
@@ -126,14 +145,24 @@ int main(){
     std :: cout << "poly2: \t\t"<< poly2 << std :: endl;
     poly2 = poly;
     std :: cout << "new poly2: \t" << poly2 << std :: endl;
+    std :: cout << "poly ? poly2\t" << (poly == poly2) << std :: endl;
+    std :: cout << "poly ? poly2\t" << (poly != poly2) << std :: endl;
 
     poly2 += poly;
     std :: cout << "poly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
+    std :: cout << "poly ? poly2\t" << (poly == poly2) << std :: endl;
+    std :: cout << "poly ? poly2\t" << (poly != poly2) << std :: endl;
+    std :: cout << "poly2[2]: \t\t" << poly2[2] << std :: endl;
 
     polynomal poly3;
     poly3 += poly;
     poly3 -= poly;
     std :: cout << "poly3: \t\t" << poly3 << std :: endl;
+
+    polynomal poly4;
+    poly4 = poly2 + poly;
+    std :: cout << "poly4: \t\t" << poly4 << "\tpoly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
+
     std :: cout << "\nDONE" << std :: endl;
 }
 /* class polynomial{
