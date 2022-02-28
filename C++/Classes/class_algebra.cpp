@@ -14,7 +14,7 @@ class polynomal{
     //copy constructor
     polynomal(std :: vector <float> coefficents){
         for (int i = 0; i < coefficents.size(); ++i){
-            coef.push_back(coefficents[i]);
+            this->coef.push_back(coefficents[i]);
         }
     }
     //get-set data
@@ -22,18 +22,19 @@ class polynomal{
         this->coef[i] = coefficent;
     }
     unsigned get_max_degree() const{
-        return coef.size();
+        return this->coef.size();
     }
     float get_coef(int i) const{
-        return coef[i];
+        return this->coef[i];
     }
     //operators
     polynomal& operator=(const polynomal& poly){
         if (&poly == this)
             return *this;
         this->coef.clear();
+        this->coef.resize(poly.get_max_degree());
         for (int i = 0; i < poly.get_max_degree(); ++i){
-            this->coef.push_back(poly.get_coef(i));
+            this->set_coef(i, poly.get_coef(i));
         }
         return *this;
     }
@@ -43,9 +44,17 @@ class polynomal{
                 this->coef.resize(poly.get_max_degree());
             }
             for (int i = 0; i < poly.get_max_degree(); ++i){
-                float coef = this->get_coef(i);
-                float new_coef = coef + poly.get_coef(i);
+                float new_coef = this->get_coef(i) + poly.get_coef(i);
                 this->set_coef(i, new_coef);
+            }
+            int flag = 0;
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                if (this->get_coef(i) != 0){
+                    flag = 1;
+                }
+            }
+            if(!flag){
+                this->coef.clear();
             }
         }
         return *this;
@@ -55,9 +64,18 @@ class polynomal{
             if (this->get_max_degree() < poly.get_max_degree()){
                 this->coef.resize(poly.get_max_degree());
             }
-            for (int i = 0; i < poly.get_max_degree(); ++i){
+            for (int i = 0; i < fmax(poly.get_max_degree(), this->get_max_degree()); ++i){
                 float new_coef = this->get_coef(i) - poly.get_coef(i);
                 this->set_coef(i, new_coef);
+            }
+            int flag = 0;
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                if (this->get_coef(i) != 0){
+                    flag = 1;
+                }
+            }
+            if(!flag){
+                this->coef.clear();
             }
         }
         return *this;
@@ -108,6 +126,16 @@ class polynomal{
                     }
                 }
             }
+            int flag = 0;
+            for (int i = 0; i < rez.get_max_degree(); ++i){
+                if (rez.get_coef(i) != 0){
+                    flag = 1;
+                }
+            }
+            if(!flag){
+                this->coef.clear();
+                return *this;
+            }
         }
         this->coef.clear();
         this->coef.resize(rez.get_max_degree());
@@ -149,6 +177,16 @@ class polynomal{
             for (int i = 0; i < this->get_max_degree(); ++i){
                 rez.set_coef(i, this->get_coef(i) / del);
             }
+            int flag = 0;
+            for (int i = 0; i < rez.get_max_degree(); ++i){
+                if (rez.get_coef(i) != 0){
+                    flag = 1;
+                }
+            }
+            if(!flag){
+                this->coef.clear();
+                return *this;
+            }
         }
         this->coef.clear();
         this->coef.resize(rez.get_max_degree());
@@ -180,7 +218,13 @@ std :: ostream& operator<< (std :: ostream& stream, const polynomal& poly){
         while (poly.get_coef(j) == 0 && j < poly.get_max_degree()){
             ++j;
         }
-        if (poly.get_coef(j) != 0){
+        if (j == 0){
+            stream << poly.get_coef(j);
+            
+        }else if(j == 1){
+            stream << poly.get_coef(j) << "x";
+        }
+        else{
             stream << poly.get_coef(j) << "x^" << j;
         }
         for (int i = j + 1; i < poly.get_max_degree(); ++i){
@@ -221,6 +265,7 @@ int main(){
 
     polynomal poly3;
     poly3 += poly;
+    std :: cout << "\nоператор +=\t\t\t" << "poly3: \t\t" << poly3 << std :: endl;
     poly3 -= poly;
     std :: cout << "\nоператор -=\t\t\t" << "poly3: \t\t" << poly3 << std :: endl;
 
@@ -233,7 +278,7 @@ int main(){
     std :: cout <<"\t- poly2:\t" << poly2 << std :: endl;
 
     std :: vector <float> coefficents2;
-    coefficents2.push_back(4);
+    coefficents2.push_back(0);
     polynomal poly5(coefficents2);
     std :: cout << "\nопертор *=\t\t\t" << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5;
     poly5 *= poly;
