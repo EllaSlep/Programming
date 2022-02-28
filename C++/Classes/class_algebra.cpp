@@ -37,7 +37,7 @@ class polynomal{
         }
         return *this;
     }
-    polynomal& operator+=(const polynomal& poly){
+    polynomal& operator+=(const polynomal& poly){ //некорректо присваивает при 0
         if (poly.get_max_degree() != 0){
             if (this->get_max_degree() < poly.get_max_degree()){
                 this->coef.resize(poly.get_max_degree());
@@ -50,7 +50,7 @@ class polynomal{
         }
         return *this;
     }
-    polynomal& operator-=(const polynomal& poly){
+    polynomal& operator-=(const polynomal& poly){ //некорректо присваивает при 0
         if (poly.get_max_degree() != 0){
             if (this->get_max_degree() < poly.get_max_degree()){
                 this->coef.resize(poly.get_max_degree());
@@ -62,7 +62,7 @@ class polynomal{
         }
         return *this;
     }
-    const polynomal operator+(const polynomal& poly){
+    const polynomal operator+(const polynomal& poly){ //некорректо присваивает
         polynomal rez;
         rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
         for (int i = 0; i < rez.get_max_degree(); ++i){
@@ -71,7 +71,7 @@ class polynomal{
         }
         return rez;
     }
-    const polynomal operator-(const polynomal& poly){
+    const polynomal operator-(const polynomal& poly){ //некорректо присваивает
         polynomal rez;
         rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
         for (int i = 0; i < rez.get_max_degree(); ++i){
@@ -80,15 +80,43 @@ class polynomal{
         }
         return rez;
     }
+    polynomal& operator-(){
+        for (int i = 0; i < this->get_max_degree(); ++i){
+            this->set_coef(i, - this->get_coef(i));
+        }
+        return *this;
+    }
     float operator[] (int i){
         return this->get_coef(i);
     }
     bool operator==(const polynomal& poly){
         return this->coef == poly.coef;
-    }bool operator!=(const polynomal& poly){
+    }
+    bool operator!=(const polynomal& poly){
         return !(this->coef == poly.coef);
     }
-
+    polynomal& operator*=(const polynomal& poly){
+        polynomal rez;
+        if ((this->get_max_degree() != 0) && (poly.get_max_degree()) != 0){
+            rez.coef.resize(poly.get_max_degree() + this->get_max_degree());
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                if (this->get_coef(i) != 0){
+                    for (int j = 0; j < poly.get_max_degree(); ++j){
+                        if (poly.get_coef(j) != 0){
+                            rez.set_coef(i + j, rez.get_coef(i + j) + (this->get_coef(i) * poly.get_coef(j)));
+                        }
+                    }
+                }
+            }
+        }
+        this->coef.clear();
+        this->coef.resize(rez.get_max_degree());
+        for(int i = 0; i < rez.get_max_degree(); ++i){
+            this->set_coef(i, rez.get_coef(i));
+        }
+        return *this;
+    }
+    //destructor
     ~polynomal(){
         coef.clear();
     }
@@ -163,6 +191,19 @@ int main(){
     poly4 = poly2 + poly;
     std :: cout << "poly4: \t\t" << poly4 << "\tpoly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
 
+    std :: cout << "poly2:\t\t" << poly2 << std :: endl;
+    poly2 = - poly2;
+    std :: cout <<"- poly2:\t" << poly2 << std :: endl;
+
+    std :: vector <float> coefficents2;
+    coefficents2.push_back(1);
+    coefficents2.push_back(0);
+    coefficents2.push_back(-2);
+    coefficents2.push_back(3);
+    polynomal poly5(coefficents2);
+    std :: cout << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5 << std :: endl;
+    poly5 *= poly;
+    std :: cout << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5 << std :: endl;
     std :: cout << "\nDONE" << std :: endl;
 }
 /* class polynomial{
