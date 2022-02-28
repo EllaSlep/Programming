@@ -62,21 +62,21 @@ class polynomal{
         }
         return *this;
     }
-    const polynomal operator+(const polynomal& poly){ //некорректо присваивает
+    polynomal operator+(const polynomal& poly){
         polynomal rez;
         rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
         for (int i = 0; i < rez.get_max_degree(); ++i){
             float new_coef = this->get_coef(i) + poly.get_coef(i);
-            this->set_coef(i, new_coef);
+            rez.set_coef(i, new_coef);
         }
         return rez;
     }
-    const polynomal operator-(const polynomal& poly){ //некорректо присваивает
+    polynomal operator-(const polynomal& poly){
         polynomal rez;
         rez.coef.resize(fmax(this->get_max_degree(), poly.get_max_degree()));
         for (int i = 0; i < rez.get_max_degree(); ++i){
             float new_coef = this->get_coef(i) - poly.get_coef(i);
-            this->set_coef(i, new_coef);
+            rez.set_coef(i, new_coef);
         }
         return rez;
     }
@@ -116,6 +116,47 @@ class polynomal{
         }
         return *this;
     }
+    polynomal operator*(const polynomal& poly){
+        polynomal rez;
+        if ((this->get_max_degree() != 0) && (poly.get_max_degree()) != 0){
+            rez.coef.resize(poly.get_max_degree() + this->get_max_degree());
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                if (this->get_coef(i) != 0){
+                    for (int j = 0; j < poly.get_max_degree(); ++j){
+                        if (poly.get_coef(j) != 0){
+                            rez.set_coef(i + j, rez.get_coef(i + j) + (this->get_coef(i) * poly.get_coef(j)));
+                        }
+                    }
+                }
+            }
+        }
+        return rez;
+    }
+    polynomal operator/(const float& del){
+        polynomal rez;
+        if (del != 0){
+            rez.coef.resize(this->get_max_degree());
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                rez.set_coef(i, this->get_coef(i) / del);
+            }
+        }
+        return rez;
+    }
+    polynomal& operator/=(const float& del){
+        polynomal rez;
+        if (del != 0){
+            rez.coef.resize(this->get_max_degree());
+            for (int i = 0; i < this->get_max_degree(); ++i){
+                rez.set_coef(i, this->get_coef(i) / del);
+            }
+        }
+        this->coef.clear();
+        this->coef.resize(rez.get_max_degree());
+        for(int i = 0; i < rez.get_max_degree(); ++i){
+            this->set_coef(i, rez.get_coef(i));
+        }
+        return *this;
+    }
     //destructor
     ~polynomal(){
         coef.clear();
@@ -133,7 +174,6 @@ std :: istream& operator>> (std :: istream& stream, polynomal& poly){
     poly = polynomal(coefficents);
     return stream;
 }
-
 std :: ostream& operator<< (std :: ostream& stream, const polynomal& poly){
     if (poly.get_max_degree() != 0){
         int j = 0;
@@ -158,8 +198,6 @@ std :: ostream& operator<< (std :: ostream& stream, const polynomal& poly){
 }
 
 int main(){
-    std :: cout << std :: endl;
-
     std :: vector <float> coefficents;
     coefficents.push_back(0);
     coefficents.push_back(1);
@@ -169,41 +207,47 @@ int main(){
     polynomal poly(coefficents);
     polynomal poly2;
 
-    std :: cout << "poly: \t\t" << poly << std :: endl;
-    std :: cout << "poly2: \t\t"<< poly2 << std :: endl;
+    std :: cout << "\nприсваивание\t\t\t" << "poly:\t\t" << poly << "\tpoly2: \t\t"<< poly2 << std :: endl;
     poly2 = poly;
-    std :: cout << "new poly2: \t" << poly2 << std :: endl;
-    std :: cout << "poly ? poly2\t" << (poly == poly2) << std :: endl;
-    std :: cout << "poly ? poly2\t" << (poly != poly2) << std :: endl;
+    std :: cout << "\nоператор =\t\t\t" << "new poly2: \t" << poly2 << std :: endl;
+    std :: cout << "\nравенство 1 и 2\t\t\t" << "poly ? poly2\t" << (poly == poly2) << std :: endl;
+    std :: cout << "\nнеравенство 1 и 2\t\t" << "poly ? poly2\t" << (poly != poly2) << std :: endl;
 
     poly2 += poly;
-    std :: cout << "poly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
-    std :: cout << "poly ? poly2\t" << (poly == poly2) << std :: endl;
-    std :: cout << "poly ? poly2\t" << (poly != poly2) << std :: endl;
-    std :: cout << "poly2[2]: \t\t" << poly2[2] << std :: endl;
+    std :: cout << "\nоператор +=\t\t\t" << "poly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
+    std :: cout << "\nравенство 1 и 2\t\t\t" << "poly ? poly2\t" << (poly == poly2) << std :: endl;
+    std :: cout << "\nнеравенство 1 и 2\t\t" << "poly ? poly2\t" << (poly != poly2) << std :: endl;
+    std :: cout << "\nоператор []\t\t\t" << "poly2[2]: \t\t" << poly2[2] << std :: endl;
 
     polynomal poly3;
     poly3 += poly;
     poly3 -= poly;
-    std :: cout << "poly3: \t\t" << poly3 << std :: endl;
+    std :: cout << "\nоператор -=\t\t\t" << "poly3: \t\t" << poly3 << std :: endl;
 
     polynomal poly4;
     poly4 = poly2 + poly;
-    std :: cout << "poly4: \t\t" << poly4 << "\tpoly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
+    std :: cout << "\nоператор +\t\t\t" << "poly4: \t\t" << poly4 << "\tpoly2: \t\t" << poly2 << "\tpoly:\t\t" << poly << std :: endl;
 
-    std :: cout << "poly2:\t\t" << poly2 << std :: endl;
+    std :: cout << "\nоператор -\t\t\t" << "poly2:\t\t" << poly2;
     poly2 = - poly2;
-    std :: cout <<"- poly2:\t" << poly2 << std :: endl;
+    std :: cout <<"\t- poly2:\t" << poly2 << std :: endl;
 
     std :: vector <float> coefficents2;
-    coefficents2.push_back(1);
-    coefficents2.push_back(0);
-    coefficents2.push_back(-2);
-    coefficents2.push_back(3);
+    coefficents2.push_back(4);
     polynomal poly5(coefficents2);
-    std :: cout << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5 << std :: endl;
+    std :: cout << "\nопертор *=\t\t\t" << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5;
     poly5 *= poly;
-    std :: cout << "poly: \t\t" << poly << "\tpoly5: \t\t" << poly5 << std :: endl;
+    std :: cout << "\t\t\t new poly5: \t\t" << poly5 << std :: endl;
+
+    polynomal poly6;
+    poly6 = poly5 * poly;
+    std :: cout << "\nоператор *\t\t\t" << "poly6:\t\t" << poly6 << "\tpoly5:\t\t" << poly5 << "\tpoly\t\t" << poly << std :: endl;
+
+    poly5 = poly5 / 4.0;
+    std :: cout << "\nоператор /\t\t\t" << "poly5:\t\t" << poly5 << std :: endl;
+    
+    poly6 /= 4.0;
+    std :: cout << "\nоператор /=\t\t\t" << "poly6:\t\t" << poly6 << std :: endl;
     std :: cout << "\nDONE" << std :: endl;
 }
 /* class polynomial{
