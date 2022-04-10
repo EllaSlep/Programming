@@ -96,8 +96,8 @@ class buffer{
         }
         else{
             set_finish(get_start());
-            set_start(get_start() + 1);
             set_buf(get_finish(), value);
+            set_start(get_start() + 1);
         }
     }
 
@@ -138,15 +138,15 @@ std::ostream& operator<< (std::ostream& stream, const buffer& buff){
         stream << buff.get_buf(buff.get_finish());
     }
     else if (buff.get_size() <= buff.get_array_size() && buff.get_start() < buff.get_finish()){
-        for (int i = buff.get_start(); i < buff.get_finish() + 1; ++ i){
+        for (int i = buff.get_start(); i <= buff.get_finish(); ++ i){
             stream << buff.get_buf(i) << " ";
         }
     }
     else {
-        for (int i = buff.get_start(); i < buff.get_array_size() - 1; ++i){
+        for (int i = buff.get_start(); i < buff.get_array_size(); ++i){
             stream << buff.get_buf(i) << " ";
         }
-        for (int i = 0; i < buff.get_finish() + 1; ++i){
+        for (int i = 0; i <= buff.get_finish(); ++i){
             stream << buff.get_buf(i) << " ";
         }
     }
@@ -173,6 +173,6 @@ int main(){
     std::cout << "buf.insert_end(1)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     //buf.delete_begin();
     //std::cout << "buf.delete_begin();\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_begin(7);
-    std::cout << "buf.insert_begin(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    //buf.insert_begin(7);
+    //std::cout << "buf.insert_begin(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
 }
