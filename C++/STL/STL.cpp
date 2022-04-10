@@ -106,7 +106,7 @@ class buffer{
         set_size(get_size() - 1);
     }
 
-    void insert_begin(const int & value){
+    void insert_begin(const int & value){ //wrong work
         if (get_start() + 1 <= get_array_size()){
             for (int i = get_finish() ; i >= get_start(); --i){
                 set_buf(i + 1, get_buf(i));
