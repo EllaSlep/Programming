@@ -200,5 +200,6 @@ int main(){
     std::cout << "buf.set_array_size(6)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.set_array_size(2);
     std::cout << "buf.set_array_size(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout <<"\n---------- OPERATOR[] ----------\n";
     std::cout << "buf[1]\t" << buf[1] << std::endl;
 }
