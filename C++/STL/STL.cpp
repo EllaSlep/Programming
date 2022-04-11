@@ -28,7 +28,7 @@ class buffer{
 
     void set_array_size(int size){// complite later
         if (size > get_array_size()){
-            if (get_size() < get_array_size()){
+            if (get_size() <= get_array_size() && get_start() < get_finish()){
                 array_size_ = size;
             }
             else{
@@ -39,6 +39,13 @@ class buffer{
                         set_size(get_size() + 1);
                     }
                 }
+            }
+        }
+        else{
+            if (get_start() < get_finish()){
+                set_finish(get_finish() - size + 1);
+                array_size_ = size;
+                set_size(size);
             }
         }
     }
@@ -94,7 +101,7 @@ class buffer{
             set_buf(get_finish(), value);
             set_size(get_size() + 1);
         }
-        else{
+        else{ // need to do a curcle
             set_finish(get_start());
             set_buf(get_finish(), value);
             set_start(get_start() + 1);
@@ -102,12 +109,15 @@ class buffer{
     }
 
     void delete_end(){
-        set_finish(get_finish() - 1);
         set_size(get_size() - 1);
+        if (get_finish() - 1 >= 0)
+            set_finish(get_finish() - 1);
+        else
+            set_finish(get_array_size() - 1);
     }
 
-    void insert_begin(const int & value){ //wrong work
-        if (get_start() + 1 <= get_array_size()){
+    void insert_begin(const int & value){ 
+        if (get_size() + 1 <= get_array_size() && get_start() <= get_finish()){ //without curcle
             for (int i = get_finish() ; i >= get_start(); --i){
                 set_buf(i + 1, get_buf(i));
             }
@@ -115,18 +125,26 @@ class buffer{
             set_buf(get_start(), value);
             set_size(get_size() + 1);
         }
-        else {
-            for (int i  = get_finish(); i > get_start(); --i){
+        else { //with cucle
+            int last = get_buf(get_array_size() - 1);
+            for (int i  = get_array_size() - 1; i > 0; --i){
                 set_buf(i + 1, get_buf(i));
             }
-            set_start(get_start() - 1);
+            set_buf(0, last);
             set_buf(get_start(), value);
         }
     }
 
     void delete_begin(){
-        set_start(get_start() + 1);
         set_size(get_size() - 1);
+        if (get_size() + 1 < get_array_size())
+            set_start(get_start() + 1);
+        else
+            set_start(0);
+    }
+
+    const int operator[](int i){
+        return get_buf(get_start() + i);
     }
 };
 
@@ -157,6 +175,7 @@ std::ostream& operator<< (std::ostream& stream, const buffer& buff){
 int main(){
     buffer buf;
     std::cout << buf << "size: " << buf.get_size() << std::endl;
+    std::cout <<"\n---------- INSERT ----------\n";
     buf.insert_end(5);
     std::cout <<"buf.insert_end(5)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.insert_begin(3);
@@ -167,12 +186,19 @@ int main(){
     std::cout << "buf.insert_end(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.insert_end(2);
     std::cout << "buf.insert_end(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    //buf.delete_end();
-    //std::cout << "buf.delete_end();\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.insert_end(1);
     std::cout << "buf.insert_end(1)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    //buf.delete_begin();
-    //std::cout << "buf.delete_begin();\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    //buf.insert_begin(7);
-    //std::cout << "buf.insert_begin(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    buf.insert_begin(7);
+    std::cout << "buf.insert_begin(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout <<"\n---------- DELETE ----------\n";
+    buf.delete_end();
+    std::cout << "buf.delete_end()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    buf.delete_begin();
+    std::cout << "buf.delete_begin()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout <<"\n---------- REIZE ----------\n";
+    buf.set_array_size(6);
+    std::cout << "buf.set_array_size(6)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    buf.set_array_size(2);
+    std::cout << "buf.set_array_size(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << "buf[1]\t" << buf[1] << std::endl;
 }
