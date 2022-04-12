@@ -197,14 +197,50 @@ class buffer{
 
     /* template <typename pred>
     bool is_sorted (int begin, int end, pred predicant){
-        for (; begin != end; ++begin){
-            if (begin == get_array_size())
-                begin = 0;
-            if (!predicant(get_buf(begin)))
-                return false;
-        }
-        return true;
     } */
+
+    /* template <typename pred>
+    bool is_partitioned (int begin, int end, pred predicant){
+    } */
+
+    template <typename pred>
+    pred find_not (pred predicant){
+        if (get_start() < get_finish())
+            for (int i = get_start(); i <= get_finish(); ++i){
+                if (get_buf(i) != predicant)
+                    return i - get_start();
+            }
+        else{
+            for (int i = get_start(); i < get_array_size(); ++i){
+                if (get_buf(i) != predicant)
+                    return i - get_start();
+            }
+            for (int i = 0; i <= get_finish(); ++i)
+                if (get_buf(i) != predicant)
+                    return get_array_size() - get_start() + i;
+        }
+        return -1;
+    }
+
+    template <typename pred>
+    pred find_backward(pred predicant){
+        if (get_finish() < get_start()){
+            for (int i = get_finish(); i >= 0; --i){
+                if (get_buf(i) == predicant)    
+                    return get_array_size() - get_start() + i;
+            }
+            for (int i = get_array_size() - 1; i >= get_start(); --i)
+                if (get_buf(i) == predicant)    
+                    return i - get_start();
+            return -1;
+        }
+        else{
+            for (int i = get_finish(); i >= get_start(); --i)
+                if (get_buf(i) == predicant)
+                    return i - get_start();
+            return -1;
+        }
+    }
 };
 
 bool greater_4(int value){
@@ -286,4 +322,11 @@ int main(){
     std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
     std::cout << "buf.one_of(greater(5))\t" << buf.one_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
     std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
+    std::cout << "buf.find_not(4)\t\t" << buf.find_not(4) << std::endl;
+    std::cout << "buf.find_not(5)\t\t" << buf.find_not(5) << std::endl;
+    buf.insert_end(5);
+    std::cout << "buf.find_backward(5)\t" << buf.find_backward(5) << std::endl;
+    std::cout << "buf.find_backward(4)\t" << buf.find_backward(4) << std::endl;
+    buf.delete_end();
+    
 }
