@@ -146,7 +146,82 @@ class buffer{
     const int operator[](int i){
         return get_buf(get_start() + i);
     }
+
+    template <typename pred>
+    bool all_of (int begin, int end, pred predicant){
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (!predicant(get_buf(begin)))
+                return false;
+        }
+        return true;
+    }
+
+    template <typename pred>
+    bool any_of (int begin, int end, pred predicant){
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (predicant(get_buf(begin)))
+                return true;
+        }
+        return false;
+    }
+
+    template <typename pred>
+    bool none_of (int begin, int end, pred predicant){
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (predicant(get_buf(begin)))
+                return false;
+        }
+        return true;
+    }
+
+    template <typename pred>
+    bool one_of (int begin, int end, pred predicant){
+        int count = 0;
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (!predicant(get_buf(begin)))
+                ++count;
+        }
+        if (count == 1)
+            return true;
+        else
+            return false;
+    }
+
+    /* template <typename pred>
+    bool is_sorted (int begin, int end, pred predicant){
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (!predicant(get_buf(begin)))
+                return false;
+        }
+        return true;
+    } */
 };
+
+bool greater_4(int value){
+    return value > 4 ? true : false;
+}
+
+bool greater_5(int value){
+    return value > 5 ? true : false;
+}
+
+bool less_4(int value){
+    return value < 4 ? true : false;
+}
+
+bool less_5(int value){
+    return value < 5 ? true : false;
+}
 
 std::ostream& operator<< (std::ostream& stream, const buffer& buff){
     if (buff.get_size() == 0){
@@ -195,11 +270,20 @@ int main(){
     std::cout << "buf.delete_end()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.delete_begin();
     std::cout << "buf.delete_begin()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    std::cout <<"\n---------- REIZE ----------\n";
+    /* std::cout <<"\n---------- REIZE ----------\n";
     buf.set_array_size(6);
     std::cout << "buf.set_array_size(6)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
     buf.set_array_size(2);
-    std::cout << "buf.set_array_size(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << "buf.set_array_size(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl; */
     std::cout <<"\n---------- OPERATOR[] ----------\n";
     std::cout << "buf[1]\t" << buf[1] << std::endl;
+    std::cout <<"\n---------- ALGO ----------\n";
+    std::cout << "buf.all_of(greater(4))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_4) << std::endl;
+    std::cout << "buf.all_of(greater(5))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.any_of(less(4))\t" << buf.any_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
+    std::cout << "buf.any_of(greater(5))\t" << buf.any_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.none_of(greater(5))\t" << buf.none_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
+    std::cout << "buf.one_of(greater(5))\t" << buf.one_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
 }
