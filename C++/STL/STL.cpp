@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #define MAX 10000
 
 class buffer{
@@ -195,13 +196,39 @@ class buffer{
             return false;
     }
 
-    /* template <typename pred>
+    template <typename pred>
     bool is_sorted (int begin, int end, pred predicant){
-    } */
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (begin != get_array_size() - 1){
+                if (!predicant(get_buf(begin), get_buf(begin + 1)))
+                    return false;
+            }
+            else
+                if (!predicant(get_buf(begin), get_buf(0)))
+                    return false;
+        }
+        return true;
+    }
 
-    /* template <typename pred>
+    template <typename pred>
     bool is_partitioned (int begin, int end, pred predicant){
-    } */
+        int count = 0;
+        int rez = predicant(get_buf(begin));
+        for (; begin != end; ++begin){
+            if (begin == get_array_size())
+                begin = 0;
+            if (rez != (predicant(get_buf(begin)))){
+                ++count;
+                rez = predicant(get_buf(begin));
+            }
+        }
+        if (count == 1)
+            return true;
+        else
+            return false;
+    }
 
     template <typename pred>
     pred find_not (pred predicant){
@@ -241,7 +268,29 @@ class buffer{
             return -1;
         }
     }
+
+    bool is_palindrome(int begin, int end){
+        if (begin < end){
+            for ( ; begin <= end; ++begin, --end){
+                if (get_buf(begin) != get_buf(end))
+                    return false;
+            }
+        }
+        else{
+            
+        }
+        return true;
+    } 
+
 };
+
+bool my_greater(int first, int second){
+    return first > second ? first : second;
+}
+
+bool my_low(int first, int second){
+    return !my_greater(first, second);
+}
 
 bool greater_4(int value){
     return value > 4 ? true : false;
@@ -282,7 +331,6 @@ std::ostream& operator<< (std::ostream& stream, const buffer& buff){
     return stream;
 };
 
-
 int main(){
     buffer buf;
     std::cout << buf << "size: " << buf.get_size() << std::endl;
@@ -315,18 +363,32 @@ int main(){
     std::cout << "buf[1]\t" << buf[1] << std::endl;
     std::cout <<"\n---------- ALGO ----------\n";
     std::cout << "buf.all_of(greater(4))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_4) << std::endl;
-    std::cout << "buf.all_of(greater(5))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.all_of(greater(5))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_5) << "\n" << std::endl;
     std::cout << "buf.any_of(less(4))\t" << buf.any_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
-    std::cout << "buf.any_of(greater(5))\t" << buf.any_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.any_of(greater(5))\t" << buf.any_of(buf.get_start(), buf.get_finish(), greater_5) << "\n" << std::endl;
     std::cout << "buf.none_of(greater(5))\t" << buf.none_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
-    std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
+    std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
     std::cout << "buf.one_of(greater(5))\t" << buf.one_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
-    std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
+    std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
     std::cout << "buf.find_not(4)\t\t" << buf.find_not(4) << std::endl;
-    std::cout << "buf.find_not(5)\t\t" << buf.find_not(5) << std::endl;
+    std::cout << "buf.find_not(5)\t\t" << buf.find_not(5) << "\n" << std::endl;
     buf.insert_end(5);
     std::cout << "buf.find_backward(5)\t" << buf.find_backward(5) << std::endl;
     std::cout << "buf.find_backward(4)\t" << buf.find_backward(4) << std::endl;
     buf.delete_end();
-    
+    std::cout << "buf.find_backward(5)\t" << buf.find_backward(5) << "\n" << std::endl;
+    std::cout << "buf.is_sorted(greater)\t" << buf.is_sorted(buf.get_start(), buf.get_finish(), my_greater) << std::endl;
+    std::cout << "buf.is_sorted(low)\t" << buf.is_sorted(buf.get_start(), buf.get_finish(), my_low) << "\n" << std::endl;
+    buf.insert_begin(4);
+    std::cout <<"buf.insert_begin(4)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << "buf.is_partitioned(greater_5)\t" << buf.is_partitioned(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
+    std::cout << "buf.is_partitioned(low_4)\t" << buf.is_partitioned(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
+    buf.delete_begin();
+    buf.delete_end();
+    buf.insert_end(5);
+    std::cout <<"buf.insert_end(4)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.get_start(), buf.get_finish()) << "\n" << std::endl;
+    buf.delete_end();
+    std::cout <<"buf.delete_end()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.get_start(), buf.get_finish()) << "\n" << std::endl;
 }
