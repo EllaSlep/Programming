@@ -11,11 +11,11 @@ class buffer{
     int buf_[MAX];
 
     public:
-    void set_start(const int& s){
+    void set_front_iter(const int& s){
         start_ = s;
     }
 
-    void set_finish(const int& f){
+    void set_back_iter(const int& f){
         finish_ = f;
     }
 
@@ -27,39 +27,47 @@ class buffer{
         size_ = size;
     }
 
-    void set_array_size(int size){// complite later
-        if (size > get_array_size()){
-            if (get_size() <= get_array_size() && get_start() < get_finish()){
-                array_size_ = size;
+    void set_array_size(int n){
+        if (n > get_array_size()){
+            if (size() <= get_array_size() && front_iter() < back_iter()){
+                array_size_ = n;
             }
             else{
-                array_size_ = size;
-                if (get_finish() + get_size() < size){
-                    for (int i = 0; i < get_finish(); ++i){
-                        set_buf(get_size(), get_buf(i));
-                        set_size(get_size() + 1);
+                array_size_ = n;
+                if (back_iter() + size() < n){
+                    for (int i = 0; i < back_iter(); ++i){
+                        set_buf(size(), get_buf(i));
+                        set_size(size() + 1);
                     }
                 }
             }
         }
         else{
-            if (get_start() < get_finish()){
-                set_finish(get_finish() - size + 1);
-                array_size_ = size;
-                set_size(size);
+            if (front_iter() + n < get_array_size()){
+                set_back_iter(front_iter() + n - 1);
+                array_size_ = n;
+                set_size(n);
+            }
+            else{
+                if (back_iter() - (get_array_size() - n) >= 0)
+                    set_back_iter(back_iter() - get_array_size() - 1 + n);
+                else
+                    set_back_iter(get_array_size() - 1 - (back_iter() - n));
+                array_size_ = n;
+                set_size(n);
             }
         }
     }
 
-    int get_start() const {
+    int front_iter() const {
         return start_;
     }
 
-    int get_finish() const {
+    int back_iter() const {
         return finish_;
     }
 
-    int get_size() const {
+    int size() const {
         return size_;
     }
 
@@ -67,12 +75,12 @@ class buffer{
         return buf_[i];
     }
 
-    int get_begin() const{
-        return buf_[get_start()];
+    int front() const{
+        return buf_[front_iter()];
     }
 
-    int get_end() const {
-        return buf_[get_finish()];
+    int back() const {
+        return buf_[back_iter()];
     }
 
     int get_array_size() const {
@@ -80,8 +88,8 @@ class buffer{
     }
 
     buffer(){
-        this->set_start(0);
-        this->set_finish(-1);
+        this->set_front_iter(0);
+        this->set_back_iter(-1);
         this->set_size(0);
         this->set_array_size(5);
     }
@@ -91,40 +99,40 @@ class buffer{
         for (int i = 0; i < size; ++i){
             this->set_buf(i, buff[i]);
         }
-        this->set_start(0);
-        this->set_finish(size - 1);
+        this->set_front_iter(0);
+        this->set_back_iter(size - 1);
         this->set_size(size);
     }
 
-    void insert_end(const int& value){
-        if (get_size() + 1 <= get_array_size()){ //without a curcle
-            set_finish(get_finish() + 1);
-            set_buf(get_finish(), value);
-            set_size(get_size() + 1);
+    void push_back(const int& value){
+        if (size() + 1 <= get_array_size()){ //without a curcle
+            set_back_iter(back_iter() + 1);
+            set_buf(back_iter(), value);
+            set_size(size() + 1);
         }
         else{ // need to do a curcle
-            set_finish(get_start());
-            set_buf(get_finish(), value);
-            set_start(get_start() + 1);
+            set_back_iter(front_iter());
+            set_buf(back_iter(), value);
+            set_front_iter(front_iter() + 1);
         }
     }
 
-    void delete_end(){
-        set_size(get_size() - 1);
-        if (get_finish() - 1 >= 0)
-            set_finish(get_finish() - 1);
+    void pop_back(){
+        set_size(size() - 1);
+        if (back_iter() - 1 >= 0)
+            set_back_iter(back_iter() - 1);
         else
-            set_finish(get_array_size() - 1);
+            set_back_iter(get_array_size() - 1);
     }
 
-    void insert_begin(const int & value){ 
-        if (get_size() + 1 <= get_array_size() && get_start() <= get_finish()){ //without curcle
-            for (int i = get_finish() ; i >= get_start(); --i){
+    void push_front(const int & value){ 
+        if (size() + 1 <= get_array_size() && front_iter() <= back_iter()){ //without curcle
+            for (int i = back_iter() ; i >= front_iter(); --i){
                 set_buf(i + 1, get_buf(i));
             }
-            set_finish(get_finish() + 1);
-            set_buf(get_start(), value);
-            set_size(get_size() + 1);
+            set_back_iter(back_iter() + 1);
+            set_buf(front_iter(), value);
+            set_size(size() + 1);
         }
         else { //with cucle
             int last = get_buf(get_array_size() - 1);
@@ -132,20 +140,20 @@ class buffer{
                 set_buf(i + 1, get_buf(i));
             }
             set_buf(0, last);
-            set_buf(get_start(), value);
+            set_buf(front_iter(), value);
         }
     }
 
-    void delete_begin(){
-        set_size(get_size() - 1);
-        if (get_size() + 1 < get_array_size())
-            set_start(get_start() + 1);
+    void pop_front(){
+        set_size(size() - 1);
+        if (size() + 1 < get_array_size())
+            set_front_iter(front_iter() + 1);
         else
-            set_start(0);
+            set_front_iter(0);
     }
 
     const int operator[](int i){
-        return get_buf(get_start() + i);
+        return get_buf(front_iter() + i);
     }
 
     template <typename pred>
@@ -232,52 +240,51 @@ class buffer{
 
     template <typename pred>
     pred find_not (pred predicant){
-        if (get_start() < get_finish())
-            for (int i = get_start(); i <= get_finish(); ++i){
+        if (front_iter() < back_iter())
+            for (int i = front_iter(); i <= back_iter(); ++i){
                 if (get_buf(i) != predicant)
-                    return i - get_start();
+                    return i - front_iter();
             }
         else{
-            for (int i = get_start(); i < get_array_size(); ++i){
+            for (int i = front_iter(); i < get_array_size(); ++i){
                 if (get_buf(i) != predicant)
-                    return i - get_start();
+                    return i - front_iter();
             }
-            for (int i = 0; i <= get_finish(); ++i)
+            for (int i = 0; i <= back_iter(); ++i)
                 if (get_buf(i) != predicant)
-                    return get_array_size() - get_start() + i;
+                    return get_array_size() - front_iter() + i;
         }
         return -1;
     }
 
     template <typename pred>
     pred find_backward(pred predicant){
-        if (get_finish() < get_start()){
-            for (int i = get_finish(); i >= 0; --i){
+        if (back_iter() < front_iter()){
+            for (int i = back_iter(); i >= 0; --i){
                 if (get_buf(i) == predicant)    
-                    return get_array_size() - get_start() + i;
+                    return get_array_size() - front_iter() + i;
             }
-            for (int i = get_array_size() - 1; i >= get_start(); --i)
+            for (int i = get_array_size() - 1; i >= front_iter(); --i)
                 if (get_buf(i) == predicant)    
-                    return i - get_start();
+                    return i - front_iter();
             return -1;
         }
         else{
-            for (int i = get_finish(); i >= get_start(); --i)
+            for (int i = back_iter(); i >= front_iter(); --i)
                 if (get_buf(i) == predicant)
-                    return i - get_start();
+                    return i - front_iter();
             return -1;
         }
     }
 
     bool is_palindrome(int begin, int end){
-        if (begin < end){
-            for ( ; begin <= end; ++begin, --end){
-                if (get_buf(begin) != get_buf(end))
-                    return false;
-            }
-        }
-        else{
-            
+        for ( ; begin != end; ++begin, --end){
+            if (begin == get_array_size())
+                begin = 0;
+            if (end == -1)
+                end = get_array_size() - 1;
+            if (get_buf(begin) != get_buf(end))
+                return false;
         }
         return true;
     } 
@@ -309,22 +316,22 @@ bool less_5(int value){
 }
 
 std::ostream& operator<< (std::ostream& stream, const buffer& buff){
-    if (buff.get_size() == 0){
+    if (buff.size() == 0){
         return stream;
     }
-    else if(buff.get_size() == 1){
-        stream << buff.get_buf(buff.get_finish());
+    else if(buff.size() == 1){
+        stream << buff.get_buf(buff.back_iter());
     }
-    else if (buff.get_size() <= buff.get_array_size() && buff.get_start() < buff.get_finish()){
-        for (int i = buff.get_start(); i <= buff.get_finish(); ++ i){
+    else if (buff.size() <= buff.get_array_size() && buff.front_iter() < buff.back_iter()){
+        for (int i = buff.front_iter(); i <= buff.back_iter(); ++ i){
             stream << buff.get_buf(i) << " ";
         }
     }
     else {
-        for (int i = buff.get_start(); i < buff.get_array_size(); ++i){
+        for (int i = buff.front_iter(); i < buff.get_array_size(); ++i){
             stream << buff.get_buf(i) << " ";
         }
-        for (int i = 0; i <= buff.get_finish(); ++i){
+        for (int i = 0; i <= buff.back_iter(); ++i){
             stream << buff.get_buf(i) << " ";
         }
     }
@@ -333,62 +340,112 @@ std::ostream& operator<< (std::ostream& stream, const buffer& buff){
 
 int main(){
     buffer buf;
-    std::cout << buf << "size: " << buf.get_size() << std::endl;
     std::cout <<"\n---------- INSERT ----------\n";
-    buf.insert_end(5);
-    std::cout <<"buf.insert_end(5)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_begin(3);
-    std::cout <<"buf.insert_begin(3)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_end(6);
-    std::cout << "buf.insert_end(6)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_end(7);
-    std::cout << "buf.insert_end(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_end(2);
-    std::cout << "buf.insert_end(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_end(1);
-    std::cout << "buf.insert_end(1)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.insert_begin(7);
-    std::cout << "buf.insert_begin(7)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
+    std::cout << buf << "size: " << buf.size() << std::endl;
+    buf.push_back(5);
+    std::cout <<"buf.push_back(5)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    buf.push_front(3);
+    std::cout <<"buf.push_front(3)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    buf.push_back(6);
+    std::cout << "buf.push_back(6)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    buf.push_back(7);
+    std::cout << "buf.push_back(7)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    buf.push_back(2);
+    std::cout << "\nbuf.push_back(2)\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
+
+    buf.push_back(1);
+    std::cout << "\nbuf.push_back(1)\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf.get_buf(i) << " ";
+    }
+    std::cout << std::endl;
+
+    buf.push_front(7);
+    std::cout << "\nbuf.push_front(7)\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
+
     std::cout <<"\n---------- DELETE ----------\n";
-    buf.delete_end();
-    std::cout << "buf.delete_end()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.delete_begin();
-    std::cout << "buf.delete_begin()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    /* std::cout <<"\n---------- REIZE ----------\n";
-    buf.set_array_size(6);
-    std::cout << "buf.set_array_size(6)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    buf.set_array_size(2);
-    std::cout << "buf.set_array_size(2)\t" << buf << "\tsize: " << buf.get_size() << std::endl; */
+    buf.pop_back();
+    std::cout << "buf.pop_back()\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
+
+    buf.pop_front();
+    std::cout << "\nbuf.pop_front()\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
+
     std::cout <<"\n---------- OPERATOR[] ----------\n";
     std::cout << "buf[1]\t" << buf[1] << std::endl;
+
     std::cout <<"\n---------- ALGO ----------\n";
-    std::cout << "buf.all_of(greater(4))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_4) << std::endl;
-    std::cout << "buf.all_of(greater(5))\t" << buf.all_of(buf.get_start(), buf.get_finish(), greater_5) << "\n" << std::endl;
-    std::cout << "buf.any_of(less(4))\t" << buf.any_of(buf.get_start(), buf.get_finish(), less_4) << std::endl;
-    std::cout << "buf.any_of(greater(5))\t" << buf.any_of(buf.get_start(), buf.get_finish(), greater_5) << "\n" << std::endl;
-    std::cout << "buf.none_of(greater(5))\t" << buf.none_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
-    std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
-    std::cout << "buf.one_of(greater(5))\t" << buf.one_of(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
-    std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
+    std::cout << "buf.all_of(greater(4))\t" << buf.all_of(buf.front_iter(), buf.back_iter(), greater_4) << std::endl;
+    std::cout << "buf.all_of(greater(5))\t" << buf.all_of(buf.front_iter(), buf.back_iter(), greater_5) << "\n" << std::endl;
+    std::cout << "buf.any_of(less(4))\t" << buf.any_of(buf.front_iter(), buf.back_iter(), less_4) << std::endl;
+    std::cout << "buf.any_of(greater(5))\t" << buf.any_of(buf.front_iter(), buf.back_iter(), greater_5) << "\n" << std::endl;
+    std::cout << "buf.none_of(greater(5))\t" << buf.none_of(buf.front_iter(), buf.back_iter(), greater_5) << std::endl;
+    std::cout << "buf.none_of(less(4))\t" << buf.none_of(buf.front_iter(), buf.back_iter(), less_4) << "\n" << std::endl;
+    std::cout << "buf.one_of(greater(5))\t" << buf.one_of(buf.front_iter(), buf.back_iter(), greater_5) << std::endl;
+    std::cout << "buf.one_of(less(4))\t" << buf.one_of(buf.front_iter(), buf.back_iter(), less_4) << "\n" << std::endl;
     std::cout << "buf.find_not(4)\t\t" << buf.find_not(4) << std::endl;
     std::cout << "buf.find_not(5)\t\t" << buf.find_not(5) << "\n" << std::endl;
-    buf.insert_end(5);
+    buf.push_back(5);
     std::cout << "buf.find_backward(5)\t" << buf.find_backward(5) << std::endl;
     std::cout << "buf.find_backward(4)\t" << buf.find_backward(4) << std::endl;
-    buf.delete_end();
+    buf.pop_back();
     std::cout << "buf.find_backward(5)\t" << buf.find_backward(5) << "\n" << std::endl;
-    std::cout << "buf.is_sorted(greater)\t" << buf.is_sorted(buf.get_start(), buf.get_finish(), my_greater) << std::endl;
-    std::cout << "buf.is_sorted(low)\t" << buf.is_sorted(buf.get_start(), buf.get_finish(), my_low) << "\n" << std::endl;
-    buf.insert_begin(4);
-    std::cout <<"buf.insert_begin(4)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    std::cout << "buf.is_partitioned(greater_5)\t" << buf.is_partitioned(buf.get_start(), buf.get_finish(), greater_5) << std::endl;
-    std::cout << "buf.is_partitioned(low_4)\t" << buf.is_partitioned(buf.get_start(), buf.get_finish(), less_4) << "\n" << std::endl;
-    buf.delete_begin();
-    buf.delete_end();
-    buf.insert_end(5);
-    std::cout <<"buf.insert_end(4)\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.get_start(), buf.get_finish()) << "\n" << std::endl;
-    buf.delete_end();
-    std::cout <<"buf.delete_end()\t" << buf << "\tsize: " << buf.get_size() << std::endl;
-    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.get_start(), buf.get_finish()) << "\n" << std::endl;
+    std::cout << "buf.is_sorted(greater)\t" << buf.is_sorted(buf.front_iter(), buf.back_iter(), my_greater) << std::endl;
+    std::cout << "buf.is_sorted(low)\t" << buf.is_sorted(buf.front_iter(), buf.back_iter(), my_low) << "\n" << std::endl;
+    buf.push_front(4);
+    std::cout <<"buf.push_front(4)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    std::cout << "buf.is_partitioned(greater_5)\t" << buf.is_partitioned(buf.front_iter(), buf.back_iter(), greater_5) << std::endl;
+    std::cout << "buf.is_partitioned(low_4)\t" << buf.is_partitioned(buf.front_iter(), buf.back_iter(), less_4) << "\n" << std::endl;
+    buf.pop_front();
+    buf.pop_back();
+    buf.push_back(5);
+    std::cout <<"buf.push_back(5)\t" << buf << "\tsize: " << buf.size() << std::endl;
+    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.front_iter(), buf.back_iter()) << "\n" << std::endl;
+    buf.pop_back();
+    std::cout <<"buf.pop_back()\t" << buf << "\tsize: " << buf.size() << std::endl;
+    std::cout << "buf.is_palindrome()\t" << buf.is_palindrome(buf.front_iter(), buf.back_iter()) << "\n" << std::endl;
+
+    std::cout <<"\n---------- REIZE ----------\n";
+    buf.set_array_size(6);
+    std::cout << "buf.set_array_size(6)\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
+
+    buf.set_array_size(2);
+    std::cout << "\nbuf.set_array_size(2)\t" << buf << "\tsize: " << buf.size() << std::endl;
+
+    std::cout << "In memory:\t\t";
+    for (int i  = 0; i < buf.size(); ++i){
+        std::cout << buf[i] << " ";
+    }
+    std::cout << std::endl;
 }
