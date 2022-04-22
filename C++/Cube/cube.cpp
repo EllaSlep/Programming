@@ -63,71 +63,109 @@ class cube{
         }
     }
 
-    void right_rotation_up(){ // доделать
-        int up[3], back[3], down[3], front[3];
+    void right_rotation_up(){ 
+        int up1[3], up2[3], back1[3], back2[3], down1[3], down2[3], front1[3], front2[3];
         
         for (int i = 0; i < 3; ++i){
-            up[i] = get_up(i, 2);
-            back[i] = get_back(i, 2);
-            down[i] = get_down(i, 2);
-            front[i] = get_front(i, 2);
+            up1[i] = get_up(i, 2);
+            back1[i] = get_back(i, 2);
+            down1[i] = get_down(i, 2);
+            front1[i] = get_front(i, 2);
+
+            up2[i] = get_right(0, i);
+            back2[i] = get_right(i, 2);
+            down2[i] = get_right(2, i);
+            front2[i] = get_right(i, 0);
         }
         for (int i = 0; i < 3; ++i){
-            set_up(i, 2, front[i]);
-            set_back(i, 2, up[i]);
-            set_down(i, 2, back[i]);
-            set_front(i , 2, down[i]);
+            set_up(i, 2, front1[i]);
+            set_back(i, 2, up1[i]);
+            set_down(i, 2, back1[i]);
+            set_front(i , 2, down1[i]);
+
+            set_right(0, i, front2[i]);
+            set_right(i, 0, down2[i]);
+            set_right(2, i, back2[i]);
+            set_right(i, 2, up2[i]);
+        }
+    }
+    void right_rotation_down(){ 
+        int up1[3], up2[3], back1[3], back2[3], down1[3], down2[3], front1[3], front2[3];
+        
+        for (int i = 0; i < 3; ++i){
+            up1[i] = get_up(i, 2);
+            back1[i] = get_back(i, 2);
+            down1[i] = get_down(i, 2);
+            front1[i] = get_front(i, 2);
+
+            up2[i] = get_right(0, i);
+            back2[i] = get_right(i, 2);
+            down2[i] = get_right(2, i);
+            front2[i] = get_right(i, 0);
+        }
+        for (int i = 0; i < 3; ++i){
+            set_up(i, 2, back1[i]);
+            set_back(i, 2, down1[i]);
+            set_down(i, 2, front1[i]);
+            set_front(i , 2, up1[i]);
+
+            set_right(0, i, back2[i]);
+            set_right(i, 0, up2[i]);
+            set_right(2, i, front2[i]);
+            set_right(i, 2, down2[i]);
         }
     }
 
-    void right_rotation_down(){ // доделать
-        int up[3], back[3], down[3], front[3];
+    void left_rotation_up(){
+        int up1[3], up2[3], back1[3], back2[3], down1[3], down2[3], front1[3], front2[3];
         
         for (int i = 0; i < 3; ++i){
-            up[i] = get_up(i, 2);
-            back[i] = get_back(i, 2);
-            down[i] = get_down(i, 2);
-            front[i] = get_front(i, 2);
+            up1[i] = get_up(i, 0);
+            back1[i] = get_back(i, 0);
+            down1[i] = get_down(i, 0);
+            front1[i] = get_front(i, 0);
+
+            up2[i] = get_left(0, i);
+            back2[i] = get_left(i, 0);
+            down2[i] = get_left(2, i);
+            front2[i] = get_left(i, 2);
         }
         for (int i = 0; i < 3; ++i){
-            set_up(i, 2, back[i]);
-            set_back(i, 2, down[i]);
-            set_down(i, 2, front[i]);
-            set_front(i , 2, up[i]);
+            set_up(i, 0, front1[i]);
+            set_back(i, 0, up1[i]);
+            set_down(i, 0, back1[i]);
+            set_front(i , 0, down1[i]);
+
+            set_left(0, i, front2[i]);
+            set_left(i, 0, up2[i]);
+            set_left(2, i, back2[i]);
+            set_left(i, 2, down2[i]);
         }
     }
-
-    void left_rotation_up(){ // доделать
-        int up[3], back[3], down[3], front[3];
+    void left_rotation_down(){
+        int up1[3], up2[3], back1[3], back2[3], down1[3], down2[3], front1[3], front2[3];
         
         for (int i = 0; i < 3; ++i){
-            up[i] = get_up(i, 0);
-            back[i] = get_back(i, 0);
-            down[i] = get_down(i, 0);
-            front[i] = get_front(i, 0);
-        }
-        for (int i = 0; i < 3; ++i){
-            set_up(i, 0, front[i]);
-            set_back(i, 0, up[i]);
-            set_down(i, 0, back[i]);
-            set_front(i , 0, down[i]);
-        }
-    }
+            up1[i] = get_up(i, 0);
+            back1[i] = get_back(i, 0);
+            down1[i] = get_down(i, 0);
+            front1[i] = get_front(i, 0);
 
-    void left_rotation_down(){ // доделать
-        int up[3], back[3], down[3], front[3];
-        
-        for (int i = 0; i < 3; ++i){
-            up[i] = get_up(i, 0);
-            back[i] = get_back(i, 0);
-            down[i] = get_down(i, 0);
-            front[i] = get_front(i, 0);
+            up2[i] = get_left(0, i);
+            back2[i] = get_left(i, 0);
+            down2[i] = get_left(2, i);
+            front2[i] = get_left(i, 2);
         }
         for (int i = 0; i < 3; ++i){
-            set_up(i, 0, back[i]);
-            set_back(i, 0, down[i]);
-            set_down(i, 0, front[i]);
-            set_front(i , 0, up[i]);
+            set_up(i, 0, back1[i]);
+            set_back(i, 0, down1[i]);
+            set_down(i, 0, front1[i]);
+            set_front(i , 0, up1[i]);
+
+            set_left(0, i, back2[i]);
+            set_left(i, 0, down2[i]);
+            set_left(2, i, front2[i]);
+            set_left(i, 2, up2[i]);
         }
     }
 
@@ -141,8 +179,8 @@ class cube{
 
             front2[i] = get_up(2, i);
             right2[i] = get_up(i, 2);
-            back2[i] = get_up(2, i);
-            left2[i] = get_up(i, 2);
+            back2[i] = get_up(0, i);
+            left2[i] = get_up(i, 0);
         }
         for (int i = 0; i < 3; ++i){
             set_right(0, i, front1[i]);
@@ -154,6 +192,196 @@ class cube{
             set_up(0, i,right2[i]);
             set_up(i, 0, back2[i]);
             set_up(2, i, left2[i]);
+        }
+    }
+    void up_rotation_left(){
+        int front1[3], front2[3], right1[3], right2[3], back1[3], back2[3], left1[3], left2[3];
+        for (int i = 0; i < 3; ++i){
+            front1[i] = get_front(0, i);
+            right1[i] = get_right(0, i);
+            back1[i] = get_back(0, i);
+            left1[i] = get_left(0, i);
+
+            front2[i] = get_up(2, i);
+            right2[i] = get_up(i, 2);
+            back2[i] = get_up(0, i);
+            left2[i] = get_up(i, 0);
+        }
+        for (int i = 0; i < 3; ++i){
+            set_right(0, i, back1[i]);
+            set_back(0, i, left1[i]);
+            set_left(0, i, front1[i]);
+            set_front(0, i, right1[i]);
+
+            set_up(i, 2, back2[i]);
+            set_up(0, i,left2[i]);
+            set_up(i, 0, front2[i]);
+            set_up(2, i, right2[i]);
+        }
+    }
+
+    void down_rotation_right(){
+        int front1[3], front2[3], right1[3], right2[3], back1[3], back2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            front1[i] = get_front(2, i);
+            right1[i] = get_right(2, i);
+            back1[i] = get_back(2, i);
+            left1[i] = get_left(2, i);
+
+            front2[i] = get_down(0, i);
+            right2[i] = get_down(i, 2);
+            back2[i] = get_down(2, i);
+            left2[i] = get_down(i, 0);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_right(2, i, front1[i]);
+            set_back(2, i, right1[i]);
+            set_left(2, i, back1[i]);
+            set_front(2, i, left1[i]);
+
+            set_down(0, i, left2[i]);
+            set_down(i, 2, front2[i]);
+            set_down(2, i, right2[i]);
+            set_down(i, 0, back2[i]);
+        }
+    }
+    void down_rotation_left(){
+        int front1[3], front2[3], right1[3], right2[3], back1[3], back2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            front1[i] = get_front(2, i);
+            right1[i] = get_right(2, i);
+            back1[i] = get_back(2, i);
+            left1[i] = get_left(2, i);
+
+            front2[i] = get_down(0, i);
+            right2[i] = get_down(i, 2);
+            back2[i] = get_down(2, i);
+            left2[i] = get_down(i, 0);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_right(2, i, back1[i]);
+            set_back(2, i, left1[i]);
+            set_left(2, i, front1[i]);
+            set_front(2, i, right1[i]);
+
+            set_down(0, i, right2[i]);
+            set_down(i, 2, back2[i]);
+            set_down(2, i, left2[i]);
+            set_down(i, 0, front2[i]);
+        }
+    }
+
+    void front_rotation_right(){
+        int up1[3], up2[3], right1[3], right2[3], down1[3], down2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            up1[i] = get_up(2, i);
+            right1[i] = get_right(i, 0);
+            down1[i] = get_down(0, i);
+            left1[i] = get_left(i, 2);
+
+            up2[i] = get_front(0, i);
+            right2[i] = get_front(i, 2);
+            down2[i] = get_front(2, i);
+            left2[i] = get_front(i, 0);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_up(2, i, left1[i]);
+            set_right(i, 0, up1[i]);
+            set_down(0, i, right1[i]);
+            set_left(i, 2, down1[i]);
+
+            set_front(0, i, left2[i]);
+            set_front(i, 2, up2[i]);
+            set_front(2, i, right2[i]);
+            set_front(i, 0, down2[i]);
+        }
+    }
+    void front_rotation_left(){
+        int up1[3], up2[3], right1[3], right2[3], down1[3], down2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            up1[i] = get_up(2, i);
+            right1[i] = get_right(i, 0);
+            down1[i] = get_down(0, i);
+            left1[i] = get_left(i, 2);
+
+            up2[i] = get_front(0, i);
+            right2[i] = get_front(i, 2);
+            down2[i] = get_front(2, i);
+            left2[i] = get_front(i, 0);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_up(2, i, right1[i]);
+            set_right(i, 0, down1[i]);
+            set_down(0, i, left1[i]);
+            set_left(i, 2, up1[i]);
+
+            set_front(0, i, right2[i]);
+            set_front(i, 2, down2[i]);
+            set_front(2, i, left2[i]);
+            set_front(i, 0, up2[i]);
+        }
+    }
+
+    void back_rotation_right(){
+        int up1[3], up2[3], right1[3], right2[3], down1[3], down2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            up1[i] = get_up(0, i);
+            right1[i] = get_right(i, 2);
+            down1[i] = get_down(2, i);
+            left1[i] = get_left(i, 0);
+
+            up2[i] = get_back(0, i);
+            right2[i] = get_back(i, 0);
+            down2[i] = get_back(2, i);
+            left2[i] = get_back(i, 2);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_up(0, i, left1[i]);
+            set_right(i, 2, up1[i]);
+            set_down(2, i, right1[i]);
+            set_left(i, 0, down1[i]);
+
+            set_back(0, i, left2[i]);
+            set_back(i, 0, up2[i]);
+            set_back(2, i, right2[i]);
+            set_back(i, 2, down2[i]);
+        }
+    }
+    void back_rotation_left(){
+        int up1[3], up2[3], right1[3], right2[3], down1[3], down2[3], left1[3], left2[3];
+
+        for (int i = 0; i < 3; ++i){
+            up1[i] = get_up(0, i);
+            right1[i] = get_right(i, 2);
+            down1[i] = get_down(2, i);
+            left1[i] = get_left(i, 0);
+
+            up2[i] = get_back(0, i);
+            right2[i] = get_back(i, 0);
+            down2[i] = get_back(2, i);
+            left2[i] = get_back(i, 2);
+        }
+
+        for (int i = 0; i < 3; ++i){
+            set_up(0, i, right1[i]);
+            set_right(i, 2, down1[i]);
+            set_down(2, i, left1[i]);
+            set_left(i, 0, up1[i]);
+
+            set_back(0, i, right2[i]);
+            set_back(i, 0, down2[i]);
+            set_back(2, i, left2[i]);
+            set_back(i, 2, up2[i]);
         }
     }
 
@@ -214,5 +442,20 @@ int main(){
     std::cout << cub << "\n\n";
 
     cub.up_rotation_right();
+    std::cout << cub << "\n\n";
+
+    cub.up_rotation_left();
+    std::cout << cub << "\n\n";
+
+    cub.down_rotation_right();
+    std::cout << cub << "\n\n";
+
+    cub.down_rotation_left();
+    std::cout << cub << "\n\n";
+
+    cub.back_rotation_right();
+    std::cout << cub << "\n\n";
+
+    cub.back_rotation_left();
     std::cout << cub << "\n\n";
 }
