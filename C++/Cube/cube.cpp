@@ -404,6 +404,18 @@ class cube{
         left_rotation_up();
         down_rotation_left();
     }
+    void pif_paf_back_right(){
+        right_rotation_down();
+        up_rotation_right();
+        right_rotation_up();
+        up_rotation_left();
+    }
+    void pif_paf_back_left(){
+        left_rotation_down();
+        up_rotation_left();
+        left_rotation_up();
+        up_rotation_right();
+    }
 
     bool side_is_completed(int side[3][3]){
         for(int i = 0; i < 3; ++i){
@@ -441,7 +453,7 @@ class cube{
             return true;
         return false;
     }
-    void down_cross(){
+    void down_cross(){ // доделать
         if (down_cross_completed())
             break;
         
@@ -454,22 +466,184 @@ class cube{
         std::vector<int> color_down_ij;
         
         for (int i = 1; i < 9; i += 2){
-            if (get_front(i / 3, i % 3) == color)
-                color_front_ij.push_back(i / 3, i % 3);
-            if (get_back(i / 3, i % 3) == color)
-                color_back_ij.push_back(i / 3, i % 3);
-            if (get_right(i / 3, i % 3) == color)
-                color_right_ij.push_back(i / 3, i % 3);
-            if (get_left(i / 3, i % 3) == color)
-                color_left_ij.push_back(i / 3, i % 3);
-            if (get_up(i / 3, i % 3) == color)
-                color_up_ij.push_back(i / 3, i % 3);
-            if (get_down(i / 3, i % 3) == color)
-                color_down_ij.push_back(i / 3, i % 3);
+            if (get_front(i / 3, i % 3) == color){
+                color_front_ij.push_back(i / 3);
+                color_front_ij.push_back(i % 3);
+            }
+            if (get_back(i / 3, i % 3) == color){
+                color_back_ij.push_back(i / 3);
+                color_back_ij.push_back(i % 3);
+            }
+            if (get_right(i / 3, i % 3) == color){
+                color_right_ij.push_back(i / 3);
+                color_right_ij.push_back(i % 3);
+            }
+            if (get_left(i / 3, i % 3) == color){
+                color_left_ij.push_back(i / 3);
+                color_left_ij.push_back(i % 3);
+            }
+            if (get_up(i / 3, i % 3) == color){
+                color_up_ij.push_back(i / 3);
+                color_up_ij.push_back(i % 3);
+            }
+            if (get_down(i / 3, i % 3) == color){
+                color_down_ij.push_back(i / 3);
+                color_down_ij.push_back(i % 3);
+            }
         }
-        if (color_down_ij.size() != 0){
-            int i = color_down_ij.front(), j = color_down_ij.front();
+        
+        while (!color_down_ij.empty()){
+            int j = color_down_ij.back();
+            color_down_ij.pop_back();
+            int i = color_down_ij.back();
+            color_down_ij.pop_back();
+
+            if (color_down_ij.size() == 0){
+                if (i == 0){
+                    if (get_front(2, 1) == get_right(1, 1))
+                        down_rotation_right();
+                    else if (get_front(2, 1) == get_left(1, 1))
+                        down_rotation_left();
+                    else{
+                        down_rotation_left();
+                        down_rotation_left();
+                    }
+                    if (down_cross_completed())
+                        break;
+                }
+                if (i == 1 && j == 0){
+                    if (get_left(2, 1) == get_front(1, 1))
+                        down_rotation_right();
+                    else if (get_left(2, 1) == get_back(1, 1))
+                        down_rotation_left();
+                    else{
+                        down_rotation_left();
+                        down_rotation_left();
+                    }
+                    if (down_cross_completed())
+                        break;
+                }
+                if (i ==1 && j == 2){
+                    if (get_right(2, 1) == get_front(1, 1))
+                        down_rotation_left();
+                    else if (get_right(2, 1) == get_back(1, 1))
+                        down_rotation_right();
+                    else{
+                        down_rotation_left();
+                        down_rotation_left();
+                    }
+                    if (down_cross_completed())
+                        break;
+                }
+                if (i == 2){
+                    if (get_back(2, 1) == get_right(1, 1))
+                        down_rotation_left();
+                    else if (get_back(2, 1) == get_left(1, 1))
+                        down_rotation_right();
+                    else{
+                        down_rotation_left();
+                        down_rotation_left();
+                    }
+                    if (down_cross_completed()){
+                        break;
+                    }
+                }
+            }
+            else{
+                int k = color_down_ij.back();
+                color_down_ij.pop_back();
+                int m = color_down_ij.back();
+                color_down_ij.pop_back();
+
+                if (i == 0){
+                    front_rotation_left();
+                    front_rotation_left();
+                    color_up_ij.push_back(m);
+                    color_up_ij.push_back(k);
+                }
+                if (i == 1 && j == 0){
+                    left_rotation_up();
+                    left_rotation_up();
+                    color_up_ij.push_back(m);
+                    color_up_ij.push_back(k);
+                }
+                if (i == 1 && j == 2){
+                    right_rotation_down();
+                    right_rotation_down();
+                    color_up_ij.push_back(m);
+                    color_up_ij.push_back(k);
+                }
+                if (i == 2){
+                    back_rotation_left();
+                    back_rotation_left();
+                    color_up_ij.push_back(m);
+                    color_up_ij.push_back(k);
+                }
+            }
         }
+        while (!color_front_ij.empty()){
+            int j = color_down_ij.back();
+            color_down_ij.pop_back();
+            int i = color_down_ij.back();
+            color_down_ij.pop_back();
+
+            if (color_front_ij.size() == 0)
+        }
+        
+    }
+
+    bool down_side_completed(){
+        int color = get_down(1, 1);
+        for (int i = 0; i < 9; ++i){
+            if (get_down(i / 3, i % 3) != color)
+                return false;
+        }
+        return true;
+    }
+    void down_side(){
+        if (down_side_completed)
+            return;
+
+        int color = get_down(1, 1);
+        std::vector<int> front;
+        std::vector<int> back;
+        std::vector<int> right;
+        std::vector<int> left;
+        std::vector<int> up;
+        std::vector<int> down;
+
+        for (int i = 0; i < 9; i += 2){
+            if (get_front(i / 3, i % 3) == color){
+                front.push_back(i / 3);
+                front.push_back(i % 3);
+            }
+            if (get_back(i / 3, i % 3) == color){
+                back.push_back(i / 3);
+                back.push_back(i % 3);
+            }
+            if (get_right(i / 3, i % 3) == color){
+                right.push_back(i / 3);
+                right.push_back(i % 3);
+            }
+            if (get_left(i / 3, i % 3) == color){
+                left.push_back(i / 3);
+                left.push_back(i % 3);
+            }
+            if (get_up(i / 3, i % 3) == color){
+                up.push_back(i / 3);
+                up.push_back(i % 3);
+            }
+            if (get_down(i / 3, i % 3) == color){
+                down.push_back(i / 3);
+                down.push_back(i % 3);
+            }
+        }
+
+        while (!front.empty()){
+            
+        }
+        
+        
     }
 };
 
