@@ -1064,6 +1064,7 @@ class cube{
         int color = get_down(1, 1);
         
         for (int i = 0; i < 9; i += 2){
+            // down
             if (get_down(i / 3, i % 3) == color){
                 if (i / 3 == 0 && i % 3 == 0){
                     if(get_left(2, 2) == get_back(1, 1) && get_front(2, 0) == get_left(1, 1)){
@@ -1138,9 +1139,33 @@ class cube{
                         break;
                 }
                 else{
-                    
+                    if (get_right(2, 2) == get_front(1, 1) && get_back(2, 0) == get_right(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_right(2, 2) == get_back(1, 1) && get_back(2, 0) == get_left(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_right(2, 2) == get_left(1, 1) && get_back(2, 0) == get_front(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+
+                    if (down_side_completed())
+                        break;
                 }
             }
+
+            // front
+            
         }
     }
 };
