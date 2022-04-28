@@ -1650,7 +1650,20 @@ class cube{
             }
 
             // up
+            if (get_up(i / 3, i % 3) == color){
+                if (i / 3 == 0 && i % 3 == 0){
+                    
+                }
+                else if (i / 3 == 0 && i % 3 == 2){
 
+                }
+                else if (i / 3 == 2 && i % 3 == 0){
+
+                }
+                else{
+
+                }
+            }
         }
     }
 };
