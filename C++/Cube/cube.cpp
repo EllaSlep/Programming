@@ -416,6 +416,18 @@ class cube{
         left_rotation_up();
         up_rotation_right();
     }
+    void pif_paf_front_left(){
+        front_rotation_right();
+        up_rotation_left();
+        front_rotation_left();
+        up_rotation_right();
+    }
+    void pif_paf_front_right(){
+        front_rotation_left();
+        up_rotation_right();
+        front_rotation_right();
+        up_rotation_left();
+    }
 
     bool side_is_completed(int side[3][3]){
         for(int i = 0; i < 3; ++i){
@@ -453,53 +465,16 @@ class cube{
             return true;
         return false;
     }
-    void down_cross(){ // доделать
+    void down_cross(){ // all else
         if (down_cross_completed())
             break;
         
         int color = get_down(1, 1);
-        std::vector<int> color_front_ij;
-        std::vector<int> color_back_ij;
-        std::vector<int> color_right_ij;
-        std::vector<int> color_left_ij;
-        std::vector<int> color_up_ij;
-        std::vector<int> color_down_ij;
-        
-        for (int i = 1; i < 9; i += 2){
-            if (get_front(i / 3, i % 3) == color){
-                color_front_ij.push_back(i / 3);
-                color_front_ij.push_back(i % 3);
-            }
-            if (get_back(i / 3, i % 3) == color){
-                color_back_ij.push_back(i / 3);
-                color_back_ij.push_back(i % 3);
-            }
-            if (get_right(i / 3, i % 3) == color){
-                color_right_ij.push_back(i / 3);
-                color_right_ij.push_back(i % 3);
-            }
-            if (get_left(i / 3, i % 3) == color){
-                color_left_ij.push_back(i / 3);
-                color_left_ij.push_back(i % 3);
-            }
-            if (get_up(i / 3, i % 3) == color){
-                color_up_ij.push_back(i / 3);
-                color_up_ij.push_back(i % 3);
-            }
-            if (get_down(i / 3, i % 3) == color){
-                color_down_ij.push_back(i / 3);
-                color_down_ij.push_back(i % 3);
-            }
-        }
-        
-        while (!color_down_ij.empty()){
-            int j = color_down_ij.back();
-            color_down_ij.pop_back();
-            int i = color_down_ij.back();
-            color_down_ij.pop_back();
 
-            if (color_down_ij.size() == 0){
-                if (i == 0){
+        for (int i = 1; i < 9; i += 2){
+            //down
+            if (get_down(i / 3, i % 3) == color){
+                if (i / 3 == 0){
                     if (get_front(2, 1) == get_right(1, 1))
                         down_rotation_right();
                     else if (get_front(2, 1) == get_left(1, 1))
@@ -508,10 +483,11 @@ class cube{
                         down_rotation_left();
                         down_rotation_left();
                     }
+
                     if (down_cross_completed())
                         break;
                 }
-                if (i == 1 && j == 0){
+                else if (i / 3 == 1 && i % 3 == 0){
                     if (get_left(2, 1) == get_front(1, 1))
                         down_rotation_right();
                     else if (get_left(2, 1) == get_back(1, 1))
@@ -520,10 +496,11 @@ class cube{
                         down_rotation_left();
                         down_rotation_left();
                     }
+
                     if (down_cross_completed())
                         break;
                 }
-                if (i ==1 && j == 2){
+                else if (i / 3 == 1 && i % 3 == 2){
                     if (get_right(2, 1) == get_front(1, 1))
                         down_rotation_left();
                     else if (get_right(2, 1) == get_back(1, 1))
@@ -532,10 +509,11 @@ class cube{
                         down_rotation_left();
                         down_rotation_left();
                     }
+
                     if (down_cross_completed())
                         break;
                 }
-                if (i == 2){
+                else{
                     if (get_back(2, 1) == get_right(1, 1))
                         down_rotation_left();
                     else if (get_back(2, 1) == get_left(1, 1))
@@ -544,52 +522,531 @@ class cube{
                         down_rotation_left();
                         down_rotation_left();
                     }
+
                     if (down_cross_completed()){
                         break;
                     }
                 }
             }
-            else{
-                int k = color_down_ij.back();
-                color_down_ij.pop_back();
-                int m = color_down_ij.back();
-                color_down_ij.pop_back();
 
-                if (i == 0){
-                    front_rotation_left();
-                    front_rotation_left();
-                    color_up_ij.push_back(m);
-                    color_up_ij.push_back(k);
+            // front
+            if (get_front(i / 3, i % 3) == color){
+                if (i / 3 == 0){
+                    if (get_up(2, 1) == get_front(1, 1)){
+                        up_rotation_right();
+                        right_rotation_down();
+                        front_rotation_left();
+                    }
+                    else if (get_up(2, 1) == get_right(1, 1)){
+                        front_rotation_left();
+                        right_rotation_down();
+                    }
+                    else if (get_up(2, 1) == get_left(1, 1)){
+                        front_rotation_right();
+                        left_rotation_down();
+                    }
+                    else{
+                        up_rotation_right();
+                        right_rotation_up();
+                        back_rotation_right();
+                    }
+
+                    if (down_cross_completed()){
+                        break;
+                    }
                 }
-                if (i == 1 && j == 0){
-                    left_rotation_up();
-                    left_rotation_up();
-                    color_up_ij.push_back(m);
-                    color_up_ij.push_back(k);
+                else if (i / 3 == 1 && i % 3 == 0){
+                    if (get_left(1, 2) == get_front(1, 1)){
+                        left_rotation_up();
+                        up_rotation_right();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else if (get_left(1, 2) == get_left(1, 1))
+                        left_rotation_down();
+                    else if (get_left(1, 2) == get_right(1, 1)){
+                        front_rotation_left();
+                        front_rotation_left();
+                        right_rotation_down();
+                    }
+                    else{
+                        left_rotation_up();
+                        up_rotation_left();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed()){
+                        break;
+                    }
                 }
-                if (i == 1 && j == 2){
-                    right_rotation_down();
-                    right_rotation_down();
-                    color_up_ij.push_back(m);
-                    color_up_ij.push_back(k);
+                else if (i / 3 == 1 && i % 3 == 2){
+                    if (get_right(1, 0) == get_front(1, 1)){
+                        right_rotation_up();
+                        up_rotation_left();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else if (get_right(1, 0) == get_right(1, 1))
+                        right_rotation_down();
+                    else if (get_right(1, 0) == get_left(1, 1)){
+                        front_rotation_left();
+                        front_rotation_left();
+                        left_rotation_down();
+                    }
+                    else{
+                        right_rotation_up();
+                        up_rotation_right();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed()){
+                        break;
+                    }
                 }
-                if (i == 2){
-                    back_rotation_left();
-                    back_rotation_left();
-                    color_up_ij.push_back(m);
-                    color_up_ij.push_back(k);
+                else {
+                    if (get_down(0, 1) == get_front(1, 1)){
+                        front_rotation_left();
+                        front_rotation_left();
+                        up_rotation_left();
+                        left_rotation_down();
+                        front_rotation_right();
+                    }
+                    else if (get_down(0, 1) == get_left(1, 1)){
+                        front_rotation_left();
+                        left_rotation_down();
+                    }
+                    else if (get_down(0, 1) == get_right(1, 1)){
+                        front_rotation_right();
+                        right_rotation_down();
+                    }
+                    else{
+                        front_rotation_right();
+                        right_rotation_up();
+                        up_rotation_left();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed()){
+                        break;
+                    }
+                }
+            }
+
+            //back
+            if (get_back(i / 3, i % 3) == color){
+                if (i / 3 == 0){
+                    if (get_up(0, 1) == get_right(1, 1)){
+                        back_rotation_right();
+                        right_rotation_up();
+                    }
+                    else if (get_up(0, 1) == get_front(1, 1)){
+                        up_rotation_left();
+                        right_rotation_down();
+                        front_rotation_left();
+                    }
+                    else if (get_up(0, 1) == get_left(1, 1)){
+                        back_rotation_left();
+                        left_rotation_up();
+                    }
+                    else{
+                        up_rotation_right();
+                        left_rotation_up();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 0){
+                    if (get_right(1, 2) == get_front(1, 1)){
+                        back_rotation_left();
+                        up_rotation_left();
+                        right_rotation_down();
+                        front_rotation_left();
+                    }
+                    else if (get_right(1, 2) == get_left(1, 1)){
+                        back_rotation_left();
+                        back_rotation_left();
+                        left_rotation_up();
+                    }
+                    else if (get_right(1, 2) == get_right(1, 1))
+                        right_rotation_up();
+                    else{
+                        right_rotation_down();
+                        up_rotation_right();
+                        back_rotation_left()
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed()){
+                        break;
+                    }
+                }
+                else if (i / 3 == 1 && i % 3 == 2){
+                    if (get_left(1, 0) == get_left(1, 1))
+                        left_rotation_up();
+                    else if (get_left(1, 0) == get_right(1, 1)){
+                        back_rotation_left();
+                        back_rotation_left();
+                        right_rotation_up();
+                    }
+                    else if (get_left(1, 0) == get_front(1, 1)){
+                        left_rotation_down();
+                        up_rotation_right();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else{
+                        left_rotation_down();
+                        up_rotation_left();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else{
+                    if (get_down(2, 1) == get_left(1, 1)){
+                        back_rotation_right();
+                        left_rotation_up();
+                    }
+                    else if (get_down(2, 1) == get_right(1, 1)){
+                        back_rotation_left();
+                        right_rotation_up();
+                    }
+                    else if(get_down(2, 1) == get_front(1, 1)){
+                        down_rotation_left();
+                        right_rotation_up();
+                        down_rotation_right();
+                        front_rotation_right();
+                    }
+                    else{
+                        down_rotation_right();
+                        left_rotation_down();
+                        down_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+            }
+
+            // right
+            if (get_right(i / 3, i % 3) == color){
+                if (i / 3 == 0){
+                    if (get_up(1, 2) == get_front(1, 1)){
+                        right_rotation_down();
+                        front_rotation_right();
+                    }
+                    else if (get_up(1, 2) == get_back(1, 1)){
+                        right_rotation_up();
+                        back_rotation_right();
+                    }
+                    else if (get_up(1, 2) == get_left(1, 1)){
+                        up_rotation_left();
+                        front_rotation_left();
+                        left_rotation_down();
+                    }
+                    else{
+                        up_rotation_left();
+                        front_rotation_right();
+                        right_rotation_down();
+                        front_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 0){
+                    if (get_front(1, 2) == get_left(1, 1)){
+                        front_rotation_left();
+                        up_rotation_left();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else if (get_front(1, 2) == get_back(1, 1)){
+                        right_rotation_up();
+                        right_rotation_up();
+                        back_rotation_right();
+                    }
+                    else if (get_front(1, 2) == get_front(1, 1))
+                        front_rotation_right();
+                    else{
+                        front_rotation_left();
+                        up_rotation_right();
+                        right_rotation_up();
+                        right_rotation_up();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 2){
+                    if (get_back(1, 0) == get_front(1, 1)){
+                        right_rotation_down();
+                        right_rotation_down();
+                        front_rotation_right();
+                    }
+                    else if (get_back(1, 0) == get_back(1, 1))
+                        back_rotation_right();
+                    else if (get_back(1, 0) == get_left(1, 1)){
+                        back_rotation_left();
+                        up_rotation_right();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else{
+                        back_rotation_left();
+                        up_rotation_left();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else{
+                    if (get_down(1, 2) == get_back(1, 1)){
+                        right_rotation_down();
+                        back_rotation_right();
+                    }
+                    else if (get_down(1, 2) == get_front(1, 1)){
+                        right_rotation_up();
+                        front_rotation_right();
+                    }
+                    else if (get_down(1, 2) == get_left(1, 1)){
+                        right_rotation_up();
+                        front_rotation_left();
+                        up_rotation_left();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else{
+                        right_rotation_up();
+                        front_rotation_left();
+                        up_rotation_right();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+            }
+
+            // left
+            if (get_left(i / 3, i % 3) == color){
+                if (i / 3 == 0){
+                    if (get_up(1, 0) == get_right(1, 1)){
+                        up_rotation_left();
+                        back_rotation_right();
+                        right_rotation_up();
+                    }
+                    else if (get_up(1, 0) == get_back(1, 1)){
+                        left_rotation_up();
+                        back_rotation_left();
+                    }
+                    else if (get_up(1, 0) == get_front(1, 1)){
+                        left_rotation_down();
+                        front_rotation_left();
+                    }
+                    else{
+                        up_rotation_left();
+                        back_rotation_left();
+                        left_rotation_up();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 0){
+                    if (get_back(1, 2) == get_back(1, 1))
+                        back_rotation_left();
+                    else if (get_back(1, 2) == get_right(1, 1)){
+                        back_rotation_right();
+                        up_rotation_left();
+                        right_rotation_down()
+                        right_rotation_down();
+                    }
+                    else if (get_back(1, 2) == get_front(1, 1)){
+                        left_rotation_down();
+                        left_rotation_down();
+                        front_rotation_left();
+                    }
+                    else{
+                        back_rotation_right();
+                        up_rotation_right();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 2){
+                    if (get_front(1, 0) == get_front(1, 1))
+                        front_rotation_left();
+                    else if (get_front(1, 0) == get_back(1, 1)){
+                        left_rotation_down();
+                        left_rotation_down();
+                        back_rotation_left();
+                    }
+                    else if (get_front(1, 0) == get_right(1, 1)){
+                        front_rotation_right();
+                        up_rotation_right();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+                    else{
+                        front_rotation_right();
+                        up_rotation_left();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else {
+                    if (get_down(1, 0) == get_back(1, 1)){
+                        left_rotation_down();
+                        back_rotation_left();
+                    }
+                    else if (get_down(1, 0) == get_front(1, 1)){
+                        left_rotation_up();
+                        front_rotation_left();
+                    }
+                    else if (get_down(1, 0) == get_right(1, 1)){
+                        left_rotation_up();
+                        front_rotation_right();
+                        up_rotation_right();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+                    else{
+                        down_rotation_right();
+                        front_rotation_right();
+                        left_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+            }
+
+            // up
+            if (get_up(i / 3, i % 3) == color){
+                if (i / 3 == 0){
+                    if (get_back(0, 1) == get_back(1, 1)){
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+                    else if (get_back(0, 1) == get_right()){
+                        up_rotation_left();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+                    else if (get_back(0, 1) == get_left()){
+                        up_rotation_right();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else{
+                        up_rotation_left();
+                        up_rotation_left();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 0){
+                    if (get_left(0, 1) == get_left(1, 1)){
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else if (get_left(0, 1) == get_front(1, 1)){
+                        up_rotation_right();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else if (get_left(0, 1) == get_back(1, 1)){
+                        up_rotation_left();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+                    else{
+                        up_rotation_left();
+                        up_rotation_left();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else if (i / 3 == 1 && i % 3 == 2){
+                    if (get_right(0, 1) == get_right(1, 1)){
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+                    else if (get_right(0, 1) == get_front(1, 1)){
+                        up_rotation_left();
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else if (get_right(0, 1) == get_back(1, 1)){
+                        up_rotation_right();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+                    else{
+                        up_rotation_left();
+                        up_rotation_left();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+
+                    if (down_cross_completed())
+                        break;
+                }
+                else{
+                    if (get_front(0, 1) == get_front(1, 1)){
+                        front_rotation_left();
+                        front_rotation_left();
+                    }
+                    else if (get_front(0, 1) == get_right(1, 1)){
+                        up_rotation_right();
+                        right_rotation_down();
+                        right_rotation_down();
+                    }
+                    else if (get_front(0, 1) == get_left(1, 1)){
+                        up_rotation_left();
+                        left_rotation_down();
+                        left_rotation_down();
+                    }
+                    else{
+                        up_rotation_left();
+                        up_rotation_left();
+                        back_rotation_left();
+                        back_rotation_left();
+                    }
+
+                    if (down_cross_completed())
+                        break;
                 }
             }
         }
-        while (!color_front_ij.empty()){
-            int j = color_down_ij.back();
-            color_down_ij.pop_back();
-            int i = color_down_ij.back();
-            color_down_ij.pop_back();
 
-            if (color_front_ij.size() == 0)
+        if (!down_cross_completed()){
+            down_cross();
         }
-        
     }
 
     bool down_side_completed(){
@@ -605,45 +1062,86 @@ class cube{
             return;
 
         int color = get_down(1, 1);
-        std::vector<int> front;
-        std::vector<int> back;
-        std::vector<int> right;
-        std::vector<int> left;
-        std::vector<int> up;
-        std::vector<int> down;
-
+        
         for (int i = 0; i < 9; i += 2){
-            if (get_front(i / 3, i % 3) == color){
-                front.push_back(i / 3);
-                front.push_back(i % 3);
-            }
-            if (get_back(i / 3, i % 3) == color){
-                back.push_back(i / 3);
-                back.push_back(i % 3);
-            }
-            if (get_right(i / 3, i % 3) == color){
-                right.push_back(i / 3);
-                right.push_back(i % 3);
-            }
-            if (get_left(i / 3, i % 3) == color){
-                left.push_back(i / 3);
-                left.push_back(i % 3);
-            }
-            if (get_up(i / 3, i % 3) == color){
-                up.push_back(i / 3);
-                up.push_back(i % 3);
-            }
             if (get_down(i / 3, i % 3) == color){
-                down.push_back(i / 3);
-                down.push_back(i % 3);
+                if (i / 3 == 0 && i % 3 == 0){
+                    if(get_left(2, 2) == get_back(1, 1) && get_front(2, 0) == get_left(1, 1)){
+                        pif_paf_front_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_left(2, 2) == get_front(1, 1) && get_front(2, 0) == get_right(1, 1)){
+                        pif_paf_front_left();
+                        up_rotation_right();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_front_right();
+                    }
+                    else if (get_left(2, 2) == get_right(1, 1) && get_front(2, 0) == get_back(1, 1)){
+                        pif_paf_front_left();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 0 && i % 3 == 2){
+                    if (get_front(2, 2) == get_left(1, 1) && get_right(2, 0) == get_front(1, 1)){
+                    pif_paf_right();
+                    up_rotation_left();
+                    while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                        pif_paf_left();
+                }
+                    else if (get_front(2, 2) == get_right(1, 1) && get_right(2, 0) == get_back(1, 1)){
+                    pif_paf_right();
+                    up_rotation_right();
+                    while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                        pif_paf_back_right();
+                }
+                    else if (get_front(2, 2) == get_back(1, 1) && get_right(2, 0) == get_left(1, 1)){
+                        pif_paf_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 2 && i % 3 == 0){
+                    if (get_back(2, 2) == get_left(1, 1) && get_left(2, 0) == get_front(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_right();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_back(2, 2) == get_front(1, 1) && get_left(2, 0) == get_right(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_back(2, 2) == get_right(1, 1) && get_left(2, 0) == get_back(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+
+                    if (down_side_completed())
+                        break;
+                }
+                else{
+                    
+                }
             }
         }
-
-        while (!front.empty()){
-            
-        }
-        
-        
     }
 };
 
