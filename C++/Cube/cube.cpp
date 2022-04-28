@@ -429,6 +429,11 @@ class cube{
         up_rotation_left();
     }
 
+    void wrong_cube(){
+        std::cout << "\n\n----------wrong complantation-----------\n\n";
+        exit(-1);
+    }
+
     bool side_is_completed(int side[3][3]){
         for(int i = 0; i < 3; ++i){
             for (int j = 0; j < 3; ++j){
@@ -1086,6 +1091,8 @@ class cube{
                         while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
                             pif_paf_back_right();
                     }
+                    else if (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                        wrong_cube();
 
                     if (down_side_completed())
                         break;
@@ -1110,6 +1117,8 @@ class cube{
                         while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
                             pif_paf_back_left();
                     }
+                    else if (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                        wrong_cube();
 
                     if (down_side_completed())
                         break;
@@ -1134,6 +1143,8 @@ class cube{
                         while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
                             pif_paf_back_right();
                     }
+                    else if (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                        wrong_cube();
 
                     if (down_side_completed())
                         break;
@@ -1158,6 +1169,8 @@ class cube{
                         while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
                             pif_paf_left();
                     }
+                    else if (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                        wrong_cube();
 
                     if (down_side_completed())
                         break;
@@ -1165,7 +1178,479 @@ class cube{
             }
 
             // front
+            if (get_front(i / 3, i % 3) == color){
+                if (i / 3 == 0 && i % 3 == 0){
+                    if (get_up(2, 0) == get_back(1, 1) && get_left(0, 2) == get_right(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(2, 0) == get_right(1, 1) && get_left(0, 2) == get_front(1, 1)){
+                        up_rotation_right();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_up(2, 0) == get_left(1, 1) && get_left(0, 2) == get_back(1, 1)){
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(2, 0) == get_front(1, 1) && get_left(0, 2) == get_left(1, 1)){
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else 
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 0 && i %3 == 2){
+                    if (get_up(2, 2) == get_right(1, 1) && get_right(0, 0) == get_back(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(2, 2) == get_left(1, 1) && get_right(0, 0) == get_front(1, 1)){
+                        up_rotation_left();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_up(2, 2) == get_back(1, 1) && get_right(0, 0) == get_left(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while(get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(2, 2) == get_front(1, 1) && get_right(0, 0) == get_right(1, 1)){
+                        while(get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 2 && i % 3 == 0){
+                    if (get_left(2, 2) == get_right(1, 1) && get_down(0, 0) == get_front(1, 1)){
+                        pif_paf_left();
+                        up_rotation_right();
+                        while (get_right(2, 0) != get_right(1, 1) || get_front(2, 2) != get_front(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_left(2, 2) == get_front(1, 1) && get_down(0, 0) == get_left(1, 1)){
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_left(2, 2) == get_left(1, 1) && get_down(0, 0) == get_back(1, 1)){
+                        pif_paf_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_left(2, 2) == get_back(1, 1) && get_down(0, 0) == get_right(1, 1)){
+                        pif_paf_left();
+                        up_rotation_right();
+                        up_rotation_right();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else{
+                    if (get_right(2, 0) == get_front(1, 1) && get_down(0, 2) == get_right(1, 1)){
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_right(2, 0) == get_left(1, 1) && get_down(0, 2) == get_front(1, 1)){
+                        pif_paf_right();
+                        up_rotation_left();
+                        while(get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_right(2, 0) == get_back(1, 1) && get_down(0, 2) == get_left(1, 1)){
+                        pif_paf_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 0) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_right(2, 0) == get_right(1, 1) && get_down(0, 2) == get_back(1, 1)){
+                        pif_paf_right();
+                        up_rotation_right();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+            }
             
+            // back
+            if (get_back(i / 3, i % 3) == color){
+                if (i / 3 == 0 && i % 3 == 0){
+                    if (get_up(0, 2) == get_left(1, 1) && get_right(2, 0) == get_back(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(0, 2) == get_front(1, 1) && get_right(2, 0) == get_left(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while(get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_up(0, 2) == get_right(1, 1) && get_right(2, 0) == get_front(1, 1)){
+                        up_rotation_left();
+                        while(get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if(get_up(0, 2) == get_back(1, 1) && get_right(2, 0) == get_right(1, 1)){
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 0 && i % 3 ==2){
+                    if (get_up(0, 0) == get_back(1, 1) && get_left(0, 0) == get_left(1, 1)){
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(0, 0) == get_right(1, 1) && get_left(0, 0) == get_back(1, 1)){
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(0, 0) == get_front(1, 1) && get_left(0, 0) == get_right(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_up(0, 0) == get_left(1, 1) && get_left(0, 0) == get_front(1, 1)){
+                        up_rotation_right();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 2 && i % 3 ==0){
+                    if (get_right(2, 2) == get_back(1, 1) && get_down(2, 2) == get_right(1, 1)){
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_right(2, 2) == get_right(1, 1) && get_down(2, 2) == get_front(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_right(2, 2) == get_front(1, 1) && get_down(2, 2) == get_left(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_right(2, 2) == get_left(1, 1) && get_down(2, 2) == get_back(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else 
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
+                }
+                else{
+                    if (get_left(2, 0) == get_back(1, 1) && get_down(2, 0) == get_left(1, 1)){
+                        while (get_back(2, 2) != get_back(1, 1) || get_down(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if(get_left(2, 0) == get_right(1, 1) && get_down(2, 0) == get_back(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_left(2, 0) == get_front(1, 1) && get_down(2, 0) == get_right(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_right(2, 0) != get_right(1, 1) || get_front(2, 2) != get_front(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_left(2, 0) == get_ && get_down(2, 0) == ){
+                        pif_paf_back_left();
+                        up_rotation_right();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+            }
+
+            // right
+            if (get_right(i / 3, i % 3) == color){
+                if (i / 3 == 0 && i % 3 == 0){
+                    if (get_up(2, 2) == get_right(1, 1) && get_front(0, 2) == get_front(1, 1)){
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_up(2, 2) == get_front(1, 1) && get_front(0, 2) == get_left(1, 1)){
+                        up_rotation_left();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_up(2, 2) == get_left(1, 1) && get_front(0, 2) == get_back(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) == get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(2, 2) == get_back(1, 1) && get_front(2, 0) == get_right(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 0 && i % 3 == 2){
+                    if (get_up(0, 2) == get_right(1, 1) && get_back(0, 0) == get_back(1, 1)){
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(0, 2) == get_front(1, 1) && get_back(0, 0) == get_right(1, 1)){
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_up(0, 2) == get_left(1, 1) && get_back(0, 0) == get_front(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_up(0, 2) == get_back(1, 1) && get_back(0, 0) == get_left(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 2 && i % 3 == 0){
+                    if (get_front(2, 2) == get_right(1, 1) && get_down(0, 2) == get_front(1, 1)){
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_front(2, 2) == get_front(1, 1) && get_down(0, 2) == get_left(1, 1)){
+                        pif_paf_right();
+                        up_rotation_left();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_front(2, 2) == get_left(1, 1) && get_down(0, 2) == get_back(1, 1)){
+                        pif_paf_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_front(2, 2) == get_back(1, 1) && get_down(0, 2) == get_right(1, 1)){
+                        pif_paf_right();
+                        up_rotation_right();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
+                }
+                else{
+                    if (get_back(2, 0) == get_right(1, 1) && get_down(2, 2) == get_back(1, 1)){
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_back(2, 0) == get_front(1, 1) && get_down(2, 2) == get_right(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_back(2, 0) == get_left(1, 1) && get_down(2, 2) == get_front(1, 1)){
+                        pif_paf_back_right();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_back(2, 0) == get_back(1, 1) && get_down(2, 2) == get_left(1, 1))[
+                        pif_paf_back_right();
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    ]
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+            }
+
+            // left
+            if (get_left(i / 3, i % 3) == color){
+                if (i / 3 == 0 && i % 3 == 0){
+                    if (get_up(0, 0) == get_left(1, 1) && get_back(0, 2) == get_back(1, 1)){
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(0, 0) == get_back(1, 1) && get_back(0, 2) == get_right(1, 1)){
+                        up_rotation_left();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(0, 0) == get_right(1, 1) && get_back(0, 2) == get_front(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_up(0, 0) == get_front(1, 1) && get_back(0, 2) == get_left(1, 1)){
+                        up_rotation_right();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 0 && i % 3 == 2){
+                    if (get_up(2, 0) == get_left(0, 0) && get_front(0, 0) == get_front(1, 1)){
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_up(2, 0) == get_back(1, 1) && get_front(0, 0) == get_left(1, 1)){
+                        up_rotation_left();
+                        while (get_left(2, 0) != get_left(1, 1) || get_back(2, 2) != get_back(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_up(2, 0) == get_right(1, 1) && get_front(0, 0) == get_back(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_up(2, 0) == get_front(1, 1) && get_front(0, 0) == get_right(1, 1)){
+                        up_rotation_right();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else if (i / 3 == 2 && i % 3 == 0){
+                    if (get_back(2, 2) == get_left(1, 1) && get_down(2, 0) == get_back(1, 1)){
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_back(2, 2) == get_back(1, 1) && get_down(2, 0) == get_right(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_back(2, 2) == get_right(1, 1) && get_down(2, 0) == get_front(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_back(2, 2) == get_front(1, 1) && get_down(2, 0) == get_left(1, 1)){
+                        pif_paf_back_left();
+                        up_rotation_right();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+                else{
+                    if (get_front(2, 0) == get_left(1, 1) && get_down(0, 0) == get_front(1, 1)){
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_front(2, 0) == get_back(1, 1) && get_down(0, 0) == get_left(1, 1)){
+                        pif_paf_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_front(2, 0) == get_right(1, 1) && get_down(0, 0) == get_back(1, 1)){
+                        pif_paf_left();
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2,2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_front(2, 0) == get_front(1, 1) && get_down(0, 0) == get_right(1, 1)){
+                        pif_paf_left();
+                        up_rotation_right();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
+                }
+            }
+
+            // up
+
         }
     }
 };
