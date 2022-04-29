@@ -470,7 +470,7 @@ class cube{
             return true;
         return false;
     }
-    void down_cross(){ // all else
+    void down_cross(){
         if (down_cross_completed())
             break;
         
@@ -484,10 +484,12 @@ class cube{
                         down_rotation_right();
                     else if (get_front(2, 1) == get_left(1, 1))
                         down_rotation_left();
-                    else{
+                    else if (get_front(2, 1) == get_back(1, 1)){
                         down_rotation_left();
                         down_rotation_left();
                     }
+                    else if (get_front(2, 1) != get_front(1, 1))
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -497,10 +499,12 @@ class cube{
                         down_rotation_right();
                     else if (get_left(2, 1) == get_back(1, 1))
                         down_rotation_left();
-                    else{
+                    else if (get_left(2, 1) == get_right(1, 1)){
                         down_rotation_left();
                         down_rotation_left();
                     }
+                    else if (get_left(2, 1) != get_left(1, 1))
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -510,10 +514,12 @@ class cube{
                         down_rotation_left();
                     else if (get_right(2, 1) == get_back(1, 1))
                         down_rotation_right();
-                    else{
+                    else (get_right(2, 1) == get_left(1, 1)){
                         down_rotation_left();
                         down_rotation_left();
                     }
+                    else if (get_right(2, 1) != get_right(1, 1))
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -523,10 +529,12 @@ class cube{
                         down_rotation_left();
                     else if (get_back(2, 1) == get_left(1, 1))
                         down_rotation_right();
-                    else{
+                    else if (get_back(2, 1) == get_front(1, 1)){
                         down_rotation_left();
                         down_rotation_left();
                     }
+                    else if (get_back(2, 1) != get_back(1, 1))
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -550,11 +558,13 @@ class cube{
                         front_rotation_right();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_up(2, 1) == get_back(1, 1)){
                         up_rotation_right();
                         right_rotation_up();
                         back_rotation_right();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -574,12 +584,14 @@ class cube{
                         front_rotation_left();
                         right_rotation_down();
                     }
-                    else{
+                    else if (get_left(1, 2) == get_back(1, 1)){
                         left_rotation_up();
                         up_rotation_left();
                         back_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -599,12 +611,14 @@ class cube{
                         front_rotation_left();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_right(1, 0) == get_back(1, 1)){
                         right_rotation_up();
                         up_rotation_right();
                         back_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -626,13 +640,15 @@ class cube{
                         front_rotation_right();
                         right_rotation_down();
                     }
-                    else{
+                    else if (get_down(0, 1) == get_back(1, 1)){
                         front_rotation_right();
                         right_rotation_up();
                         up_rotation_left();
                         back_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -656,11 +672,13 @@ class cube{
                         back_rotation_left();
                         left_rotation_up();
                     }
-                    else{
+                    else (get_up(0, 1) == get_back(1, 1)){
                         up_rotation_right();
                         left_rotation_up();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -679,12 +697,14 @@ class cube{
                     }
                     else if (get_right(1, 2) == get_right(1, 1))
                         right_rotation_up();
-                    else{
+                    else if (get_right(1, 2) == get_back(1, 1)){
                         right_rotation_down();
                         up_rotation_right();
                         back_rotation_left()
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed()){
                         break;
@@ -704,12 +724,14 @@ class cube{
                         front_rotation_left();
                         front_rotation_left();
                     }
-                    else{
+                    else if (get_left(1, 0) == get_back(1, 1)){
                         left_rotation_down();
                         up_rotation_left();
                         back_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -729,12 +751,14 @@ class cube{
                         down_rotation_right();
                         front_rotation_right();
                     }
-                    else{
+                    else if (get_down(2, 1) == get_back(1, 1)){
                         down_rotation_right();
                         left_rotation_down();
                         down_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -757,12 +781,14 @@ class cube{
                         front_rotation_left();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_up(1, 2) == get_right(1, 1)){
                         up_rotation_left();
                         front_rotation_right();
                         right_rotation_down();
                         front_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -781,12 +807,14 @@ class cube{
                     }
                     else if (get_front(1, 2) == get_front(1, 1))
                         front_rotation_right();
-                    else{
+                    else if (get_front(1, 2) == get_right(1, 1)){
                         front_rotation_left();
                         up_rotation_right();
                         right_rotation_up();
                         right_rotation_up();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -805,12 +833,14 @@ class cube{
                         left_rotation_down();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_back(1, 0) == get_right(1, 1)){
                         back_rotation_left();
                         up_rotation_left();
                         right_rotation_down();
                         right_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -831,13 +861,15 @@ class cube{
                         left_rotation_down();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_down(1, 2) == get_right(1, 1)){
                         right_rotation_up();
                         front_rotation_left();
                         up_rotation_right();
                         right_rotation_down();
                         right_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -860,11 +892,13 @@ class cube{
                         left_rotation_down();
                         front_rotation_left();
                     }
-                    else{
+                    else if (get_up(1, 0) == get_left(1, 1)){
                         up_rotation_left();
                         back_rotation_left();
                         left_rotation_up();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -883,12 +917,14 @@ class cube{
                         left_rotation_down();
                         front_rotation_left();
                     }
-                    else{
+                    else if (get_back(1, 2) == get_left(1, 1)){
                         back_rotation_right();
                         up_rotation_right();
                         left_rotation_down();
                         left_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -907,12 +943,14 @@ class cube{
                         right_rotation_down();
                         right_rotation_down();
                     }
-                    else{
+                    else if (get_front(1, 0) == get_left(1, 1)){
                         front_rotation_right();
                         up_rotation_left();
                         left_rotation_down();
                         left_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -933,11 +971,13 @@ class cube{
                         right_rotation_down();
                         right_rotation_down();
                     }
-                    else{
+                    else if (get_down(1, 0) == get_left(1, 1)){
                         down_rotation_right();
                         front_rotation_right();
                         left_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -961,12 +1001,14 @@ class cube{
                         left_rotation_down();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_back(0, 1) == get_front(1, 1)){
                         up_rotation_left();
                         up_rotation_left();
                         front_rotation_left();
                         front_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -986,12 +1028,14 @@ class cube{
                         back_rotation_left();
                         back_rotation_left();
                     }
-                    else{
+                    else if (get_left(0, 1) == get_right(1, 1)){
                         up_rotation_left();
                         up_rotation_left();
                         right_rotation_down();
                         right_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -1011,12 +1055,14 @@ class cube{
                         back_rotation_left();
                         back_rotation_left();
                     }
-                    else{
+                    else if (get_right(0, 1) == get_left(1, 1)){
                         up_rotation_left();
                         up_rotation_left();
                         left_rotation_down();
                         left_rotation_down();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -1036,12 +1082,14 @@ class cube{
                         left_rotation_down();
                         left_rotation_down();
                     }
-                    else{
+                    else if (get_front(0, 1) == get_back(1, 1)){
                         up_rotation_left();
                         up_rotation_left();
                         back_rotation_left();
                         back_rotation_left();
                     }
+                    else
+                        wrong_cube();
 
                     if (down_cross_completed())
                         break;
@@ -1049,15 +1097,25 @@ class cube{
             }
         }
 
-        if (!down_cross_completed()){
+        if (!down_cross_completed())
             down_cross();
-        }
     }
 
     bool down_side_completed(){
         int color = get_down(1, 1);
         for (int i = 0; i < 9; ++i){
             if (get_down(i / 3, i % 3) != color)
+                return false;
+        }
+        int back = get_back(1, 1), front = get_front(1, 1), right = get_right(1, 1), left = get_left(1, 1);
+        for (int i = 0; i < 3; ++i){
+            if (get_front(2, i) != front)
+                return false;
+            if (get_back(2, i) != back)
+                return false;
+            if (get_right(2, i) != right)
+                return false;
+            if (get_left(2, i) != left)
                 return false;
         }
         return true;
@@ -1652,19 +1710,152 @@ class cube{
             // up
             if (get_up(i / 3, i % 3) == color){
                 if (i / 3 == 0 && i % 3 == 0){
-                    
+                    if (get_back(0, 2) == get_front(1, 1) && get_left(0, 0) == get_left(1, 1)){
+                        up_rotation_right();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_back(0, 2) == get_right(1, 1) && get_left(0, 0) == get_front(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_right(2, 1) != get_right(1, 1) || get_front(2, 2) != get_front(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_back(0, 2) == get_back(1, 1) && get_left(0, 0) == get_right(1, 1)){
+                        up_rotation_left();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+
+                    }
+                    else if (get_back(0, 2) == get_left(1, 1) && get_left(0, 0) == get_back(1, 1)){
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else
+                        wrong_cube();
+
+                    if (down_side_completed())
+                        break;
                 }
                 else if (i / 3 == 0 && i % 3 == 2){
-
+                    if (get_back(0, 0) == get_right(1, 1) && get_right(0, 2) == get_back(1, 1)){
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_back(0, 0) == get_front(1, 1) && get_right(0, 2) == get_right(1, 1)){
+                        up_rotation_left();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_back(0, 0) == get_left(1, 1) && get_right(0, 2) == get_front(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_back(0, 0) == get_back(1, 1) && get_right(0, 2) == get_left(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else 
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
                 }
                 else if (i / 3 == 2 && i % 3 == 0){
-
+                    if (get_front(0, 0) == get_left(1, 1) && get_left(0, 2) == get_front(1, 1)){
+                        while (get_left(2, 2) != get_left(1, 1) || get_front(2, 0) != get_front(1, 1))
+                            pif_paf_left();
+                    }
+                    else if (get_front(0, 0) == get_front(1, 1) && get_left(0, 2) == get_right(1, 1)){
+                        up_rotation_right();
+                        while (get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_front(0, 0) == get_right(1, 1) && get_left(0, 2) == get_back(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_right(2, 2) != get_right(1, 1) || get_back(2, 0) != get_back(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_front(0, 0) == get_back(1, 1) && get_left(0, 2) == get_left(1, 1)){
+                        up_rotation_left();
+                        while ( get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else
+                        wrong_cube();
+                    
+                    if (down_side_completed())
+                        break;
                 }
                 else{
+                    if (get_front(0, 2) == get_right(1, 1) && get_right(0, 0) == get_front(1, 1)){
+                        while ( get_front(2, 2) != get_front(1, 1) || get_right(2, 0) != get_right(1, 1))
+                            pif_paf_right();
+                    }
+                    else if (get_front(0, 2) == get_back(1, 1) && get_right(0, 0) == get_right(1, 1)){
+                        up_rotation_right();
+                        while (get_back(2, 0) != get_back(1, 1) || get_right(2, 2) != get_right(1, 1))
+                            pif_paf_back_right();
+                    }
+                    else if (get_front(0, 2) == get_left(1, 1) && get_right(0, 0) == get_back(1, 1)){
+                        up_rotation_left();
+                        up_rotation_left();
+                        while (get_back(2, 2) != get_back(1, 1) || get_left(2, 0) != get_left(1, 1))
+                            pif_paf_back_left();
+                    }
+                    else if (get_front(0, 2) == get_front(1, 1) && get_right(0, 0) == get_left(1, 1)){
+                        up_rotation_left();
+                        while (get_front(2, 0) != get_front(1, 1) || get_left(2, 2) != get_left(1, 1))
+                            pif_paf_left();
+                    }
+                    else
+                        wrong_cube();
 
+                    if (down_side_completed())
+                        break;
                 }
             }
         }
+    
+        if (!down_side_completed())
+            down_side();
+    }
+
+    bool two_levels_completed(){
+        if (!down_side_completed())
+            return false;
+
+        int front = get_front(1, 1), back = get_back(1, 1), right = get_right(1, 1), left = get_left(1, 1);
+        for (int i = 0; i < 3; ++i){
+            if (get_front(1, i) != front)
+                return false;
+            if (get_front(2, i) != front)
+                return false;
+            if (get_back(1, i) != back)
+                return false;
+            if (get_back(2, i) != back)
+                return false;
+            if (get_right(1, i) != right)
+                return false;
+            if (get_right(2, i) != right)
+                return false;
+            if (get_left(1, i) != left)
+                return false;
+            if (get_left(2, i) != left)
+                return false;
+        }
+        return true;
+    }
+    void two_levels(){
+        // up
+        //front
+        //back
+        //right
+        //left
     }
 };
 
