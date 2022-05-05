@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <algorithm>
+#include <string>
 #include "cube.hpp"
 
 // 1 - white, 2 - yellow, 3 - pink, 4 - green, 5 - orange, 6 - blue
 
 int main(){
+    std::string rotations, str;
     std::cout << "\n\n";
     
     int front[3][3] = {{6, 6, 6}, {6, 6, 6}, {6, 6, 6}};
@@ -18,8 +21,11 @@ int main(){
     cube cub(front, back, right, left, up, down);
     std::cout << cub << "\n\n";
     
-    cub.cube_disassembling();
+    cub.read(rotations, "cube.txt");
     std::cout << cub << "\n\n";
-    cub.cube_assembling();
-    std::cout << cub << "\n\n";
+
+    /* cub.cube_disassembling();
+    std::cout << cub << "\n\n"; */
+    /* cub.cube_assembling();
+    std::cout << cub << "\n\n"; */
 }

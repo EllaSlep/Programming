@@ -2488,6 +2488,47 @@ class cube{
         up_rotation_right();
         down_rotation_left();
     }
+
+    void read(std::string rotations, std::string file_name){
+        std::string str;
+
+        std::ifstream in(file_name);
+        while (getline(in, str))
+            rotations += str; 
+        
+        while (rotations != "\0"){
+            if (rotations[1] == ' '){
+                if (rotations[0] == 'R')
+                    right_rotation_up();
+                else if (rotations[0] == 'L')
+                    left_rotation_up();
+                else if (rotations[0] == 'F')
+                    front_rotation_right();
+                else if (rotations[0] == 'B')
+                    back_rotation_right();
+                else if (rotations[0] == 'U')
+                    up_rotation_right();
+                else if (rotations[0] == 'D')
+                    down_rotation_right();
+                rotations.erase(rotations.begin(), rotations.begin() + 2);
+            }
+            else {
+                if (rotations[0] == 'R')
+                    right_rotation_down();
+                else if (rotations[0] == 'L')
+                    left_rotation_down();
+                else if (rotations[0] == 'F')
+                    front_rotation_left();
+                else if (rotations[0] == 'B')
+                    back_rotation_left();
+                else if (rotations[0] == 'U')
+                    up_rotation_left();
+                else if (rotations[0] == 'D')
+                    down_rotation_left();
+                rotations.erase(rotations.begin(), rotations.begin() + 3);
+            }
+        }
+    }
 };
 
 std::ostream& operator<< (std::ostream& stream, cube cub){
