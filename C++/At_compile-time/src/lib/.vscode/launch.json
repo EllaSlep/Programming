@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": true,
+      "externalConsole": false,
+      "cwd": "/Users/macbook/Desktop/ИТМО/программирование/Programming/C++/At compile-time/src/lib",
+      "program": "/Users/macbook/Desktop/ИТМО/программирование/Programming/C++/At compile-time/src/lib/build/Debug/outDebug",
+      "MIMode": "gdb"
+    }
+  ]
+}

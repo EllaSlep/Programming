@@ -30,6 +30,50 @@ class polynomal /*<T>*/{
     float get_coef(int i) const{
         return this->coef[i];
     }
+    std::string print(){
+        std::string str;
+        if (this->get_max_degree() != 0){
+        int j = 0;
+        while (this->get_coef(j) == 0 && j < this->get_max_degree()){
+            ++j;
+        }
+        if (j == 0){
+            str.push_back(this->get_coef(j)); //stream << poly.get_coef(j);
+            
+        }else if(j == 1){
+            str.push_back(this->get_coef(j));
+            str.push_back('x');
+            str.push_back('^'); //stream << poly.get_coef(j) << "x";
+        }
+        else{
+            str.push_back(this->get_coef(j));
+            str.push_back('x');
+            str.push_back('^');
+            str.push_back(j); //stream << poly.get_coef(j) << "x^" << j;
+        }
+        for (int i = j + 1; i < this->get_max_degree(); ++i){
+            if (this->get_coef(i) > 0){
+                str.push_back(' ');
+                str.push_back('+');
+                str.push_back(' ');
+                str.push_back(this->get_coef(i));
+                str.push_back('x');
+                str.push_back('^');
+                str.push_back(i); //stream << " + " << poly.get_coef(i) << "x^" << i;
+            }
+            else if (this->get_coef(i) < 0){
+                str.push_back(' ');
+                str.push_back(this->get_coef(i));
+                str.push_back('x');
+                str.push_back('^');
+                str.push_back(i); //stream << " " << poly.get_coef(i) << "x^" << i;
+            }
+        }
+    }
+    else
+        str.push_back('0'); //stream << "0";
+    return str; //return stream;
+    }
     //operators
     polynomal& operator=(const polynomal& poly){
         if (&poly == this)
