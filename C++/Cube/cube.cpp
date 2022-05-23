@@ -26,6 +26,6 @@ int main(){
 
     /* cub.cube_disassembling();
     std::cout << cub << "\n\n"; */
-    /* cub.cube_assembling();
-    std::cout << cub << "\n\n"; */
+    cub.cube_assembling();
+    std::cout << cub << "\n\n";
 }
