@@ -10,5 +10,6 @@ int main(){
     coef.push_back(1);
 
     polynomal <int> poly(coef);
-    std::cout << poly << std::endl;
+    std::cout << poly << "\n";
+    std::cout << poly.print(coef);//std::cout << poly << std::endl;
 }
