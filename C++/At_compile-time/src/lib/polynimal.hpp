@@ -4,7 +4,7 @@
 #include <vector>
 
 template <typename T>
-class polynomal /*<T>*/{
+class polynomal{
     private:
     std :: vector <T> coef;
     
@@ -13,14 +13,12 @@ class polynomal /*<T>*/{
     polynomal(){
     }
     //copy constructor
-    //template <typename T>
     polynomal(std :: vector <T> coefficents){
         for (int i = 0; i < coefficents.size(); ++i){
             this->coef.push_back(coefficents[i]);
         }
     }
     //get-set data
-    //template <typename T>
     void set_coef(int i, T coefficent){
         this->coef[i] = coefficent;
     }
@@ -38,41 +36,35 @@ class polynomal /*<T>*/{
             ++j;
         }
         if (j == 0){
-            str += char(coef[j] +'0'); //.push_back(itos(coef[j])); //stream << poly.get_coef(j);
+            str += char(coef[j] +'0'); 
             
         }else if(j == 1){
-            str += char(coef[j] +'0'); //.push_back(itos(coef[j]));
-            str += "x";// .push_back('x');
-            //str.push_back('^'); //stream << poly.get_coef(j) << "x";
+            str += char(coef[j] +'0'); 
+            str += "x";
         }
         else{
-            str += char(coef[j] +'0'); //.push_back(itos(coef[j]));
-            str += "x^"; //.push_back('x');
-            //str.push_back('^');
-            str += char(j + '0');//str.push_back(j); //stream << poly.get_coef(j) << "x^" << j;
+            str += char(coef[j] +'0'); 
+            str += "x^"; 
+            str += char(j + '0');
         }
         for (int i = j + 1; i < coef.size(); ++i){
             if (coef[i] > 0){
-                str += " + "; //str.push_back(' ');
-                //str.push_back('+');
-                //str.push_back(' ');
-                str += char(coef[i] +'0');//str.push_back(itos(coef[i]));
-                str += "x^"; //str.push_back('x');
-                //str.push_back('^');
-                str += char(i + '0'); // str.push_back(i); //stream << " + " << poly.get_coef(i) << "x^" << i;
+                str += " + "; 
+                str += char(coef[i] +'0');
+                str += "x^";
+                str += char(i + '0');
             }
             else if (coef[i] < 0){
-                str += " ";//str.push_back(' ');
-                str += char(coef[i] +'0');//str.push_back(itos(coef[i]));
-                str += "x^";//str.push_back('x');
-                //str.push_back('^');
-                str += char(i + '0');//str.push_back(i); //stream << " " << poly.get_coef(i) << "x^" << i;
+                str += " - ";
+                str += char(abs(coef[i]) +'0');
+                str += "x^";
+                str += char(i + '0');
             }
         }
     }
     else
-        str += '0';//str.push_back('0'); //stream << "0";
-    return str; //return stream;
+        str += '0';
+    return str; 
     }
     //operators
     polynomal& operator=(const polynomal& poly){
@@ -85,7 +77,7 @@ class polynomal /*<T>*/{
         }
         return *this;
     }
-    polynomal& operator+=(const polynomal& poly){ //некорректо присваивает при 0
+    polynomal& operator+=(const polynomal& poly){ 
         if (poly.get_max_degree() != 0){
             if (this->get_max_degree() < poly.get_max_degree()){
                 this->coef.resize(poly.get_max_degree());
@@ -106,7 +98,7 @@ class polynomal /*<T>*/{
         }
         return *this;
     }
-    polynomal& operator-=(const polynomal& poly){ //некорректо присваивает при 0
+    polynomal& operator-=(const polynomal& poly){ 
         if (poly.get_max_degree() != 0){
             if (this->get_max_degree() < poly.get_max_degree()){
                 this->coef.resize(poly.get_max_degree());
@@ -151,7 +143,6 @@ class polynomal /*<T>*/{
         }
         return *this;
     }
-    //template <typename T>
     T operator[] (int i){
         return this->get_coef(i);
     }

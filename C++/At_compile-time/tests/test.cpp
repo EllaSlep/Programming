@@ -1,4 +1,4 @@
-#include "src/lib/polynimal.hpp"//"/Users/macbook/Desktop/ITMO/prog/Programming/C++/At_compile-time/src/lib/polynimal.hpp"
+#include "src/lib/polynimal.hpp"
 #include <iostream>
 #include <vector>
 #include "gtest/gtest.h"
