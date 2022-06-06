@@ -23,6 +23,6 @@ TEST(Polynomal3_Should, Return_Polynimal3){
     std::vector<int> coef;
     polynomal<int> poly;
     std::string actual = poly.print(coef);
-    std::string expected = "2 + 2x^1";
+    std::string expected = "0";
     EXPECT_EQ(expected, actual);
 }
