@@ -20,7 +20,7 @@
     2 lab| [Использование библиотек](https://github.com/EllaSlep/Programming/blob/main/C%2B%2B/Curl/curl.cpp) | [Текст задания](#Curl) <a id="up8"></a>
     3 lab | [STL. Контейнеры](https://github.com/EllaSlep/Programming/tree/main/C%2B%2B/STL) | [Текст задания](#STL) <a id="up9"></a>
     4 lab | [Кубик Рубика](https://github.com/EllaSlep/Programming/tree/main/C%2B%2B/Cube) | [Текст задания](#Cube) <a id="up10"></a>
-    5 lab | [Allocator]() | [Текст задания](#Alloc) <a id="up11"></a>
+    5 lab | [Allocator](https://github.com/EllaSlep/Programming/tree/main/C%2B%2B/Allocator) | [Текст задания](#Alloc) <a id="up11"></a>
     6 lab | [At compile-time](https://github.com/EllaSlep/Programming/tree/main/C%2B%2B/At_compile-time/src/lib) [^комментарий] | [Текст задания](#Compile) <a id="up12"></a>
 
 ***
