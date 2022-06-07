@@ -78,6 +78,15 @@ public:
         }
         std::cout << "\nCreate";
     }
+    ~my_alloc(){
+        typename std::list<block>::iterator i = mem_blocks.begin();
+        while (i != mem_blocks.end()){
+            typename std::list<block>::iterator tmp = i;
+            ++i;
+            free((*tmp).pointer_);
+        }
+        std::cout << "\nDestroyed";
+    }
 
     pointer allocate (size_type size){ 
         typename std::list<block>::iterator i = mem_blocks.begin();
@@ -94,7 +103,7 @@ public:
             throw std::bad_alloc();
         }
         (*i).used_ = true;
-        std::cout << "\nAllocate";
+        std::cout << "\nAllocate\t" << (*i).pointer_;
         return (*i).pointer_;
     }
 
@@ -104,26 +113,54 @@ public:
             ++i;
         }
         (*i).used_ = false;
-        std::cout << "\nDeallocate";
+        std::cout << "\nDeallocate\t" << (*i).pointer_;
     }
+    
 };
 
 int main(){
-    //auto start = std::chrono::high_resolution_clock::now();
-    //my_alloc<int> Allocator(2, 2, 4, 8);
+    std::cout << "\n-------------CREATION TEST-------------\n";
+    auto start = std::chrono::high_resolution_clock::now();
+
+    my_alloc<int> Allocator(2, 2, 4, 8);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "\n" << duration.count() << "s\n";
+
+    std::cout << "\n-------------VECTOR TEST-------------\n";
+    start = std::chrono::high_resolution_clock::now();
     std::vector<int, my_alloc<int> > vec(2, 4);
-    std::cout << "\n";
+    /* std::cout << "\n";
     std::cout << "\n" << vec[0];
     std::cout << "\n" << vec[1];
-    std::cout << "\n";
+    std::cout << "\n"; */
 
     vec.resize(5);
-    std::cout << "\n";
+    /* std::cout << "\n";
     std::cout << "\n" << vec[0];
     std::cout << "\n" << vec[1];
-    std::cout << "\n";
+    std::cout << "\n"; */
 
-    //auto end = std::chrono::high_resolution_clock::now();
-    //std::chrono::duration<float> duration = end - start;
-    //std::cout << "\n" << duration.count() << "s\n";
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - start;
+    std::cout << "\n" << duration.count() << "s\n";
+
+    std::cout << "\n-------------BASIC VECTOR TEST-------------\n";
+    start = std::chrono::high_resolution_clock::now();
+    std::vector<int> vec2(2, 4);
+    /* std::cout << "\n";
+    std::cout << "\n" << vec2[0];
+    std::cout << "\n" << vec2[1];
+    std::cout << "\n"; */
+
+    vec2.resize(5);
+    /* std::cout << "\n";
+    std::cout << "\n" << vec2[0];
+    std::cout << "\n" << vec2[1];
+    std::cout << "\n"; */
+
+    end = std::chrono::high_resolution_clock::now();
+    duration = end - start;
+    std::cout << "\n" << duration.count() << "s\n";
 }
